@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Primary Meta Tags -->
+  <title>AX팀 운영일지 | AI Experience Team</title>
+  <meta name="title" content="AX팀 운영일지 | AI Experience Team" />
+  <meta name="description" content="32주간의 AI 기술 탐구 여정. 매주 수요일, AI Agent, MCP, RAG, LLM 등 AI 기술의 최전선을 탐구합니다." />
+  <meta name="keywords" content="AI, Agent, MCP, RAG, LLM, AI Experience Team, AX팀, 운영일지, 세션, 학습노트, 인공지능" />
+  <meta name="author" content="AX Team" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://ax-team-logbook.vercel.app/" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://ax-team-logbook.vercel.app/" />
+  <meta property="og:title" content="AX팀 운영일지 | AI Experience Team" />
+  <meta property="og:description" content="32주간의 AI 기술 탐구 여정. 매주 수요일, AI Agent, MCP, RAG, LLM 등 AI 기술의 최전선을 탐구합니다." />
+  <meta property="og:image" content="https://ax-team-logbook.vercel.app/og-image.png" />
+  <meta property="og:site_name" content="AX팀 운영일지" />
+  <meta property="og:locale" content="ko_KR" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="https://ax-team-logbook.vercel.app/" />
+  <meta name="twitter:title" content="AX팀 운영일지 | AI Experience Team" />
+  <meta name="twitter:description" content="32주간의 AI 기술 탐구 여정. 매주 수요일, AI Agent, MCP, RAG, LLM 등 AI 기술의 최전선을 탐구합니다." />
+  <meta name="twitter:image" content="https://ax-team-logbook.vercel.app/og-image.png" />
+
+  <!-- Additional SEO -->
+  <meta name="theme-color" content="#7c3aed" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+
+  <!-- Structured Data (JSON-LD) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "AX팀 운영일지",
+    "alternateName": "AX Team Logbook",
+    "url": "https://ax-team-logbook.vercel.app/",
+    "description": "32주간의 AI 기술 탐구 여정. 매주 수요일, AI 기술의 최전선을 탐구합니다.",
+    "inLanguage": "ko",
+    "publisher": {
+      "@type": "Organization",
+      "name": "AX Team",
+      "url": "https://ax-team-logbook.vercel.app/"
+    }
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "name": "AX팀 운영일지",
+    "description": "32주간의 AI 기술 탐구 여정",
+    "url": "https://ax-team-logbook.vercel.app/",
+    "inLanguage": "ko",
+    "blogPost": [
+      {
+        "@type": "BlogPosting",
+        "headline": "AI Agent, MCP, Skills, Sub-agent 개념",
+        "datePublished": "2026-04-01",
+        "description": "비유와 실전 시나리오로 배우는 AI 에이전트 생태계",
+        "url": "https://ax-team-logbook.vercel.app/week-1/ai-agent-guide",
+        "keywords": "AI Agent, MCP, Skills, Sub-agent"
+      },
+      {
+        "@type": "BlogPosting",
+        "headline": "RAG (검색 증강 생성) 개념과 원리",
+        "datePublished": "2026-04-08",
+        "description": "도서관 사서 비유로 풀어보는 검색 증강 생성의 모든 것",
+        "url": "https://ax-team-logbook.vercel.app/week-2/rag-guide",
+        "keywords": "RAG, 검색증강생성, AI, LLM"
+      }
+    ]
+  }
+  </script>
+
+  <!-- Preconnect to external domains for performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- External Stylesheet -->
+  <link rel="stylesheet" href="/styles.css">
+
+  <!-- Weeks Data -->
+  <script src="/data/weeks.js"></script>
+</head>
+<body>
+
+  <header>
+    <a href="/" class="logo">
+      <div class="logo-icon">⚡</div>
+      <span class="logo-text"><span>AX</span> 팀 운영일지</span>
+    </a>
+    <nav>
+      <a href="#timeline">타임라인</a>
+      <a href="study-notes.html">학습 노트</a>
+      <a href="#about">소개</a>
+      <a href="https://github.com/parkarck/ax-team-logbook" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <div class="hero-badge">
+      🤖 AI Experience Team · 32주 프로그램
+    </div>
+    <h1>AX팀 AI Experience 여정</h1>
+    <p>매주 수요일, AI 기술의 최전선을 탐구합니다. 32주간의 학습 기록을 함께 만들어갑니다.</p>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-section">
+    <div class="progress-card">
+      <div class="progress-header">
+        <span class="progress-label">전체 진행률</span>
+        <span class="progress-count" id="progressText">0/32 완료</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+      </div>
+      <div class="progress-stats">
+        <div class="stat">
+          <div class="stat-number" id="statCompleted">0</div>
+          <div class="stat-label">완료 세션</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number" id="statNotes">0</div>
+          <div class="stat-label">학습 노트</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number" id="statRemaining">32</div>
+          <div class="stat-label">남은 주차</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <div id="timeline" class="section-header">
+      <h2>타임라인</h2>
+      <div class="section-divider"></div>
+    </div>
+
+    <div class="timeline" id="timelineContainer">
+      <!-- JS로 동적 렌더링 -->
+    </div>
+
+    <div id="about" class="section-header" style="margin-top: 4rem;">
+      <h2>AX팀 소개</h2>
+      <div class="section-divider"></div>
+    </div>
+
+    <div class="about-grid">
+      <div class="about-card">
+        <div class="about-card-icon">🎯</div>
+        <h3>팀 미션</h3>
+        <p>AI 기술을 실무에 적용하는 방법을 탐구하고, 팀원들과 지식을 공유하며 함께 성장합니다.</p>
+      </div>
+      <div class="about-card">
+        <div class="about-card-icon">📅</div>
+        <h3>운영 방식</h3>
+        <p>매주 수요일 세션을 진행하고, 세션 내용을 정리하여 학습 노트로 기록합니다. 총 32주 프로그램입니다.</p>
+      </div>
+      <div class="about-card">
+        <div class="about-card-icon">🛠️</div>
+        <h3>다루는 기술</h3>
+        <p>AI Agent · MCP · RAG · LLM · 프롬프트 엔지니어링 · 멀티모달 AI 등 다양한 AI 기술을 탐구합니다.</p>
+      </div>
+      <div class="about-card">
+        <div class="about-card-icon">🚀</div>
+        <h3>목표</h3>
+        <p>32주 후 팀원 모두가 AI 기술을 실무에 활용할 수 있는 역량을 갖추는 것이 목표입니다.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>
+      AX Team Logbook &middot;
+      <a href="https://github.com/parkarck/ax-team-logbook" target="_blank" rel="noopener">GitHub</a>
+      &middot; Hosted on Vercel
+    </p>
+  </footer>
+
+  <script>
+    (function() {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const TAG_CLASSES = {
+        'AI Agent': 'tag-ai',
+        'MCP': 'tag-mcp',
+        'RAG': 'tag-rag',
+        'LLM': 'tag-llm'
+      };
+
+      function getWeekStatus(week) {
+        const weekDate = new Date(week.date + 'T00:00:00');
+        const weekEnd = new Date(weekDate);
+        weekEnd.setDate(weekEnd.getDate() + 6);
+
+        if (week.contents && week.contents.length > 0) return 'completed';
+        if (today >= weekDate && today <= weekEnd) return 'current';
+        if (today > weekEnd) return 'past';
+        return 'upcoming';
+      }
+
+      function formatDate(dateStr) {
+        const d = new Date(dateStr + 'T00:00:00');
+        const month = d.getMonth() + 1;
+        const day = d.getDate();
+        return `${month}월 ${day}일`;
+      }
+
+      function renderTimeline() {
+        const container = document.getElementById('timelineContainer');
+        let html = '';
+        let completedCount = 0;
+        let notesCount = 0;
+
+        WEEKS_DATA.forEach(function(week) {
+          const status = getWeekStatus(week);
+          if (status === 'completed') {
+            completedCount++;
+            notesCount += week.contents.length;
+          }
+
+          if (status === 'completed' || status === 'current' || status === 'past') {
+            html += renderFullCard(week, status);
+          } else {
+            html += renderMinimalCard(week);
+          }
+        });
+
+        container.innerHTML = html;
+
+        // Update progress
+        const pct = Math.round((completedCount / 32) * 100);
+        document.getElementById('progressFill').style.width = pct + '%';
+        document.getElementById('progressText').textContent = completedCount + '/32 완료 (' + pct + '%)';
+        document.getElementById('statCompleted').textContent = completedCount;
+        document.getElementById('statNotes').textContent = notesCount;
+        document.getElementById('statRemaining').textContent = 32 - completedCount;
+      }
+
+      function renderFullCard(week, status) {
+        const dotClass = status === 'completed' ? 'timeline-dot-completed'
+                       : status === 'current' ? 'timeline-dot-current'
+                       : 'timeline-dot-upcoming';
+        const cardClass = status === 'completed' ? 'timeline-card-completed'
+                        : status === 'current' ? 'timeline-card-current'
+                        : '';
+
+        let tagsHtml = '';
+        if (week.tags) {
+          tagsHtml = '<div class="card-tags">';
+          week.tags.forEach(function(tag) {
+            const cls = TAG_CLASSES[tag] || 'tag-default';
+            tagsHtml += '<span class="tag ' + cls + '">' + tag + '</span>';
+          });
+          tagsHtml += '</div>';
+        }
+
+        let contentsHtml = '';
+        if (week.contents && week.contents.length > 0) {
+          contentsHtml = '<div class="card-contents">';
+          week.contents.forEach(function(c) {
+            const href = c.htmlPath || c.path || '#';
+            contentsHtml += '<a href="' + href + '" class="content-link">' +
+              '<span class="content-link-icon">📄</span>' +
+              c.title +
+              '</a>';
+          });
+          contentsHtml += '</div>';
+        }
+
+        let currentBadge = '';
+        if (status === 'current') {
+          currentBadge = '<span class="current-badge">🔵 이번 주</span>';
+        }
+
+        const title = week.title || '';
+        const desc = week.description || '';
+        const hasContent = title || desc || (week.contents && week.contents.length > 0);
+
+        return '<div class="timeline-item">' +
+          '<div class="timeline-dot ' + dotClass + '"></div>' +
+          '<div class="timeline-card ' + cardClass + '">' +
+            '<div class="card-header">' +
+              '<span class="card-week-label">WEEK ' + week.week + '</span>' +
+              '<span class="card-date">' + formatDate(week.date) + '</span>' +
+            '</div>' +
+            (currentBadge ? '<div style="margin-bottom:0.5rem">' + currentBadge + '</div>' : '') +
+            (title ? '<div class="card-title">' + title + '</div>' : '') +
+            (desc ? '<div class="card-desc">' + desc + '</div>' : '') +
+            tagsHtml +
+            contentsHtml +
+          '</div>' +
+        '</div>';
+      }
+
+      function renderMinimalCard(week) {
+        return '<div class="timeline-item">' +
+          '<div class="timeline-dot timeline-dot-upcoming"></div>' +
+          '<div class="timeline-upcoming-minimal">' +
+            '<span class="upcoming-week">W' + week.week + '</span>' +
+            '<span class="upcoming-date">' + formatDate(week.date) + '</span>' +
+          '</div>' +
+        '</div>';
+      }
+
+      renderTimeline();
+    })();
+  </script>
+
+</body>
+</html>

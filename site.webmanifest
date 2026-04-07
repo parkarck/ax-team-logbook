@@ -1,0 +1,24 @@
+{
+  "name": "Operations AX팀 운영일지",
+  "short_name": "AX팀 운영일지",
+  "description": "매주 수요일, AI 기술의 최전선을 탐구하는 AI Experience Team의 운영일지",
+  "start_url": "/",
+  "display": "website",
+  "background_color": "#0f0f11",
+  "theme_color": "#7c3aed",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "technology", "blog"],
+  "lang": "ko",
+  "dir": "ltr",
+  "scope": "/",
+  "related_applications": [],
+  "prefer_related_applications": false
+}

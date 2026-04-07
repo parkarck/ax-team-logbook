@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Agent 개념 가이드 - AX 팀 첫 번째 세션</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+    background: #1a1a2e;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    color: #e0e0e0;
+  }
+
+  /* ── Slideshow Container ── */
+  #slideshow {
+    width: 960px;
+    height: 720px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  }
+
+  .slide {
+    display: none;
+    width: 100%;
+    height: 100%;
+    padding: 52px 60px 40px;
+    position: absolute;
+    top: 0; left: 0;
+    overflow: hidden;
+  }
+  .slide.active { display: flex; flex-direction: column; }
+
+  /* ── Colour Themes per slide ── */
+  .theme-cover   { background: linear-gradient(135deg, #0f3460 0%, #16213e 60%, #1a1a2e 100%); }
+  .theme-blue    { background: linear-gradient(135deg, #0d2137 0%, #162a40 100%); }
+  .theme-teal    { background: linear-gradient(135deg, #0d3d3d 0%, #0a2b2b 100%); }
+  .theme-purple  { background: linear-gradient(135deg, #1e0a40 0%, #2a0f5a 100%); }
+  .theme-green   { background: linear-gradient(135deg, #0a2e14 0%, #0d3d1d 100%); }
+  .theme-orange  { background: linear-gradient(135deg, #2e1a00 0%, #3d2400 100%); }
+  .theme-dark    { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
+
+  /* ── Slide header bar ── */
+  .slide-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+    margin-bottom: 6px;
+  }
+
+  /* ── Cover slide ── */
+  .cover-title {
+    font-size: 52px;
+    font-weight: 800;
+    line-height: 1.15;
+    color: #fff;
+    margin-top: auto;
+    margin-bottom: 12px;
+  }
+  .cover-subtitle {
+    font-size: 20px;
+    color: rgba(255,255,255,0.65);
+    margin-bottom: 24px;
+  }
+  .cover-badge {
+    display: inline-block;
+    background: rgba(100,200,255,0.15);
+    border: 1px solid rgba(100,200,255,0.35);
+    color: #64c8ff;
+    font-size: 13px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    margin-top: auto;
+  }
+  .cover-toc {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 24px;
+    margin-top: 18px;
+  }
+  .cover-toc-item {
+    font-size: 14px;
+    color: rgba(255,255,255,0.6);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .cover-toc-item .num {
+    color: #64c8ff;
+    font-weight: 700;
+    font-size: 15px;
+    min-width: 20px;
+  }
+
+  /* ── Section title slide ── */
+  .section-num {
+    font-size: 96px;
+    font-weight: 900;
+    color: rgba(255,255,255,0.06);
+    line-height: 1;
+    position: absolute;
+    right: 50px;
+    top: 40px;
+  }
+  .section-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-size: 44px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.2;
+  }
+  .section-en {
+    font-size: 18px;
+    color: rgba(255,255,255,0.45);
+    margin-top: 6px;
+  }
+  .section-tagline {
+    margin-top: 20px;
+    font-size: 17px;
+    color: rgba(255,255,255,0.75);
+    border-left: 3px solid #64c8ff;
+    padding-left: 14px;
+    line-height: 1.6;
+  }
+
+  /* ── Content layout ── */
+  h2.slide-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+  }
+  h2.slide-title .accent { color: #64c8ff; }
+
+  .content-body {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+
+  /* ── Two-column layout ── */
+  .cols2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    flex: 1;
+  }
+  .cols3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    flex: 1;
+  }
+
+  /* ── Cards ── */
+  .card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 18px 20px;
+  }
+  .card-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #64c8ff;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .card ul li {
+    font-size: 13.5px;
+    color: rgba(255,255,255,0.8);
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    line-height: 1.45;
+  }
+  .card ul li::before {
+    content: '▸';
+    color: #64c8ff;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* ── Table ── */
+  .styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+  .styled-table th {
+    background: rgba(100,200,255,0.15);
+    color: #64c8ff;
+    text-align: left;
+    padding: 9px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .styled-table td {
+    padding: 8px 12px;
+    color: rgba(255,255,255,0.82);
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    vertical-align: top;
+    line-height: 1.45;
+  }
+  .styled-table tr:last-child td { border-bottom: none; }
+  .styled-table tr:nth-child(even) td { background: rgba(255,255,255,0.03); }
+
+  /* ── Code block ── */
+  pre {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-size: 12.5px;
+    line-height: 1.55;
+    font-family: 'Consolas', 'D2Coding', 'Courier New', monospace;
+    color: #b0e0ff;
+    overflow: hidden;
+    white-space: pre;
+  }
+  .kw  { color: #c586c0; }
+  .str { color: #ce9178; }
+  .cmt { color: #6a9955; }
+  .num { color: #b5cea8; }
+  .fn  { color: #dcdcaa; }
+  .hi  { color: #9cdcfe; }
+
+  /* ── Badge / pill ── */
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11.5px;
+    font-weight: 600;
+  }
+  .badge-blue   { background: rgba(100,200,255,0.18); color: #64c8ff; }
+  .badge-green  { background: rgba(100,255,150,0.18); color: #64ff96; }
+  .badge-red    { background: rgba(255,100,100,0.18); color: #ff9090; }
+  .badge-yellow { background: rgba(255,220,100,0.18); color: #ffd664; }
+
+  /* ── Comparison row ── */
+  .vs-row {
+    display: grid;
+    grid-template-columns: 1fr 32px 1fr;
+    gap: 10px;
+    align-items: stretch;
+  }
+  .vs-side {
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .vs-side.bad  { border-left: 3px solid #ff6464; }
+  .vs-side.good { border-left: 3px solid #64ff96; }
+  .vs-mid {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: rgba(255,255,255,0.4);
+    font-weight: 700;
+  }
+  .vs-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .vs-side.bad  .vs-label { color: #ff9090; }
+  .vs-side.good .vs-label { color: #64ff96; }
+  .vs-side p {
+    font-size: 13px;
+    color: rgba(255,255,255,0.72);
+    line-height: 1.55;
+  }
+
+  /* ── Step list ── */
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .step-num {
+    background: #64c8ff;
+    color: #0d2137;
+    font-weight: 800;
+    font-size: 13px;
+    min-width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .step-text {
+    font-size: 14px;
+    color: rgba(255,255,255,0.82);
+    line-height: 1.5;
+  }
+  .step-text strong { color: #fff; }
+
+  /* ── Highlight box ── */
+  .hbox {
+    background: rgba(100,200,255,0.1);
+    border: 1px solid rgba(100,200,255,0.25);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-size: 14px;
+    color: rgba(255,255,255,0.85);
+    line-height: 1.6;
+  }
+  .hbox strong { color: #64c8ff; }
+
+  /* ── Stat grid ── */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    flex: 1;
+  }
+  .stat-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 20px 16px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .stat-value {
+    font-size: 32px;
+    font-weight: 900;
+    color: #64ff96;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .stat-label {
+    font-size: 12px;
+    color: rgba(255,255,255,0.55);
+    text-align: center;
+    line-height: 1.4;
+  }
+
+  /* ── Arch diagram ── */
+  .arch-box {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: 'Consolas', 'D2Coding', monospace;
+    font-size: 12.5px;
+    line-height: 1.7;
+    color: #b0e0ff;
+    flex: 1;
+  }
+
+  /* ── Glossary ── */
+  .glossary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    flex: 1;
+  }
+  .glossary-item {
+    background: rgba(255,255,255,0.04);
+    border-radius: 7px;
+    padding: 9px 12px;
+    border-left: 3px solid rgba(100,200,255,0.4);
+  }
+  .glossary-term {
+    font-size: 13px;
+    font-weight: 700;
+    color: #64c8ff;
+    margin-bottom: 2px;
+  }
+  .glossary-en {
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 4px;
+    font-style: italic;
+  }
+  .glossary-def {
+    font-size: 12.5px;
+    color: rgba(255,255,255,0.72);
+    line-height: 1.4;
+  }
+
+  /* ── Summary card ── */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    flex: 1;
+  }
+  .summary-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 18px 20px;
+  }
+  .summary-card .sc-icon { font-size: 28px; margin-bottom: 8px; }
+  .summary-card .sc-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+  .summary-card .sc-en {
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 10px;
+  }
+  .summary-card .sc-def {
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 6px;
+    line-height: 1.5;
+  }
+  .summary-card .sc-key {
+    font-size: 12px;
+    color: #64c8ff;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .summary-card .sc-key::before { content: '⚡'; font-size: 11px; }
+
+  /* ── Navigation ── */
+  #nav {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .nav-btn {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    padding: 8px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: inherit;
+    transition: background 0.15s;
+  }
+  .nav-btn:hover { background: rgba(255,255,255,0.2); }
+  .nav-btn:disabled { opacity: 0.3; cursor: default; }
+  #slide-counter {
+    font-size: 13px;
+    color: rgba(255,255,255,0.45);
+    min-width: 80px;
+    text-align: center;
+  }
+  .dot-nav {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 600px;
+  }
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    cursor: pointer;
+    transition: background 0.15s, transform 0.15s;
+  }
+  .dot.active {
+    background: #64c8ff;
+    transform: scale(1.3);
+  }
+
+  /* ── Misc utilities ── */
+  .mt8  { margin-top: 8px; }
+  .mt12 { margin-top: 12px; }
+  .mt16 { margin-top: 16px; }
+  .text-muted { color: rgba(255,255,255,0.45); font-size: 12px; }
+  .emoji { font-style: normal; }
+</style>
+</head>
+<body>
+
+<div id="slideshow">
+
+  <!-- ╔══════════════════════════════╗ -->
+  <!-- ║  SLIDE 1 — COVER            ║ -->
+  <!-- ╚══════════════════════════════╝ -->
+  <div class="slide theme-cover active">
+    <div class="slide-label">AX Team · Session 01</div>
+    <div class="cover-title">AI Agent<br>개념 가이드</div>
+    <div class="cover-subtitle">Agent · MCP · Skills · Sub-agent</div>
+    <div class="cover-toc">
+      <div class="cover-toc-item"><span class="num">01</span> 에이전트 (Agent)</div>
+      <div class="cover-toc-item"><span class="num">02</span> MCP</div>
+      <div class="cover-toc-item"><span class="num">03</span> 스킬 (Skills)</div>
+      <div class="cover-toc-item"><span class="num">04</span> 서브 에이전트</div>
+      <div class="cover-toc-item"><span class="num">05</span> 실전 시나리오</div>
+      <div class="cover-toc-item"><span class="num">06</span> 용어 정리</div>
+    </div>
+    <div class="cover-badge">2025년 AX 팀 교육 자료</div>
+  </div>
+
+  <!-- ╔══════════════════════════════╗ -->
+  <!-- ║  SLIDE 2 — Agent 섹션 타이틀 ║ -->
+  <!-- ╚══════════════════════════════╝ -->
+  <div class="slide theme-blue">
+    <div class="section-num">01</div>
+    <div style="margin-top:auto;margin-bottom:auto">
+      <div class="section-icon">🤖</div>
+      <div class="section-title">에이전트</div>
+      <div class="section-en">Agent</div>
+      <div class="section-tagline">
+        언어 모델(LLM) + 도구(Tools) + 자율성(Autonomy)<br>
+        질문에 답하는 <strong>관찰자</strong>가 아닌, 직접 <strong>행동하는 실행자</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════════════╗ -->
+  <!-- ║  SLIDE 3 — AI vs Agent 비교 ║ -->
+  <!-- ╚══════════════════════════════╝ -->
+  <div class="slide theme-blue">
+    <div class="slide-label">01 · Agent</div>
+    <h2 class="slide-title">일반 AI <span class="accent">vs</span> AI 에이전트</h2>
+    <div class="content-body" style="gap:16px">
+      <div class="vs-row">
+        <div class="vs-side bad">
+          <div class="vs-label">일반 AI 챗봇</div>
+          <p>💬 질문에만 답함<br>📖 정보 제공<br>🔄 수동적 대화<br>❓ "어떻게 해요?"</p>
+        </div>
+        <div class="vs-mid">→</div>
+        <div class="vs-side good">
+          <div class="vs-label">AI 에이전트</div>
+          <p>🛠️ 직접 작업 수행<br>🎯 목표 달성<br>🚀 능동적 행동<br>✅ "이렇게 해드렸어요"</p>
+        </div>
+      </div>
+      <div class="hbox mt12">
+        <strong>실제 예시</strong><br>
+        <span style="color:rgba(255,255,255,0.6)">"웹사이트 성능 최적화해주세요"</span><br>
+        일반 AI → 방법만 설명 &nbsp;|&nbsp; AI 에이전트 → 직접 분석·코드 수정·테스트·보고서 작성
+      </div>
+      <div class="cols3 mt8">
+        <div class="card">
+          <div class="card-title">🧠 언어 모델</div>
+          <ul><li>추론 및 계획</li><li>상황 이해</li><li>의사결정</li></ul>
+        </div>
+        <div class="card">
+          <div class="card-title">🛠️ 도구</div>
+          <ul><li>파일 시스템</li><li>웹 검색</li><li>API 호출</li><li>코드 실행</li></ul>
+        </div>
+        <div class="card">
+          <div class="card-title">🎯 자율성</div>
+          <ul><li>자율적 실행</li><li>피드백 루프</li><li>결과 도달</li></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════════════╗ -->
+  <!-- ║  SLIDE 4 — 에이전트 아키텍처  ║ -->
+  <!-- ╚══════════════════════════════╝ -->
+  <div class="slide theme-blue">
+    <div class="slide-label">01 · Agent</div>
+    <h2 class="slide-title">에이전트 <span class="accent">아키텍처</span> 유형 (2025)</h2>
+    <div class="content-body" style="gap:14px">
+      <div class="cols3">
+        <div class="card">
+          <div class="card-title" style="color:#ffd664">1단계 · 단일 에이전트</div>
+          <ul>
+            <li>간단한 작업, 프로토타입에 적합</li>
+            <li>빠른 설정, 낮은 비용</li>
+            <li>복잡한 작업에는 한계</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title" style="color:#64ff96">2단계 · 계층형</div>
+          <ul>
+            <li>관리자 + 전문가 팀 구조</li>
+            <li>전문성 분리, 확장성 확보</li>
+            <li>플래너 → 리서처 → 라이터 → QA</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title" style="color:#c586c0">3단계 · 연합 네트워크</div>
+          <ul>
+            <li>독립적 에이전트들이 협력</li>
+            <li>최대 확장성, 병렬 처리</li>
+            <li>2025-2026년 주류 패턴</li>
+          </ul>
+        </div>
+      </div>
+      <div class="hbox mt8">
+        <strong>핵심 공식</strong> &nbsp; Agent = LLM + Tools + Autonomy<br>
+        <span style="font-size:13px;color:rgba(255,255,255,0.6)">
+          에이전트는 단순히 답을 생성하는 것이 아니라, 목표를 향해 <em>자율적으로 행동</em>합니다.
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════════════╗ -->
+  <!-- ║  SLIDE 5 — MCP 섹션 타이틀  ║ -->
+  <!-- ╚══════════════════════════════╝ -->
+  <div class="slide theme-teal">
+    <div class="section-num">02</div>
+    <div style="margin-top:auto;margin-bottom:auto">
+      <div class="section-icon">🔌</div>
+      <div class="section-title">MCP</div>
+      <div class="section-en">Model Context Protocol</div>
+      <div class="section-tagline">
+        AI를 위한 <strong>USB-C 표준</strong><br>
+        모든 외부 시스템을 하나의 표준으로 연결하는 개방형 프로토콜
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════════════╗ -->
+  <!-- ║  SLIDE 6 — MCP 개요          ║ -->
+  <!-- ╚══════════════════════════════╝ -->
+  <div class="slide theme-teal">
+    <div class="slide-label">02 · MCP</div>
+    <h2 class="slide-title">MCP란 <span class="accent">무엇인가?</span></h2>
+    <div class="content-body" style="gap:14px">
+      <div class="vs-row">
+        <div class="vs-side bad">
+          <div class="vs-label">MCP 이전</div>
+          <p style="font-size:12.5px;line-height:1.8">
+            AI ──→ GitHub 전용 연결<br>
+            AI ──→ Slack 전용 연결<br>
+            AI ──→ Database 전용 연결<br>
+            AI ──→ File System 전용 연결<br>
+            = 각각 따로 개발 필요 ❌
+          </p>
+        </div>
+        <div class="vs-mid">→</div>
+        <div class="vs-side good">
+          <div class="vs-label">MCP 이후</div>
+          <p style="font-size:12.5px;line-height:1.8">
+            AI ──→ MCP ──→ GitHub<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├────→ Slack<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├────→ Database<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└────→ File System<br>
+            = 하나의 표준으로 모두 연결 ✅
+          </p>
+        </div>
+      </div>
+      <div class="cols3 mt8">
+        <div class="card">
+          <div class="card-title" style="color:#64ff96">표준화</div>
+          <ul><li>단일 표준 프로토콜</li><li>재사용 가능한 커넥터</li><li>확장 용이</li></ul>
+        </div>
+        <div class="card">
+          <div class="card-title" style="color:#64c8ff">상황 공유</div>
+          <ul><li>데이터 + 의미(Context) 전송</li><li>전년 대비 증감, 원인까지 전달</li><li>깊이 있는 AI 판단 가능</li></ul>
+        </div>
+        <div class="card">
+          <div class="card-title" style="color:#ffd664">양방향 통신</div>
+          <ul><li>읽기: AI가 데이터 수집</li><li>쓰기: AI가 직접 작업 수행</li><li>실시간 상호작용</li></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════════════╗ -->
+  <!-- ║  SLIDE 7 — MCP 업계 현황     ║ -->
+  <!-- ╚══════════════════════════════╝ -->
+  <div class="slide theme-teal">
+    <div class="slide-label">02 · MCP</div>
+    <h2 class="slide-title">MCP <span class="accent">도입 현황</span> (2025)</h2>
+    <div class="content-body" style="gap:14px">
+      <table class="styled-table">
+        <thead>
+          <tr>
+            <th>회사</th>
+            <th>도입 현황</th>
+            <th>활용 사례</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Anthropic</strong></td><td><span class="badge badge-blue">창시자</span></td><td>Claude 전면 탑재 (2024.11 오픈소스 공개)</td></tr>
+          <tr><td><strong>OpenAI</strong></td><td><span class="badge badge-green">채택</span></td><td>Agents SDK에 통합 (2025.3)</td></tr>
+          <tr><td><strong>Google</strong></td><td><span class="badge badge-green">전면 지원</span></td><td>Gemini 탑재, Maps·Cloud DB 공개</td></tr>
+          <tr><td><strong>Microsoft</strong></td><td><span class="badge badge-yellow">도입 중</span></td><td>Agentic AI Foundation 공동 설립, Azure 통합 예정</td></tr>
+          <tr><td><strong>Hugging Face</strong></td><td><span class="badge badge-yellow">통합 중</span></td><td>프레임워크 통합, 개발자 도구 강화</td></tr>
+        </tbody>
+      </table>
+      <div class="hbox mt8">
+        <strong>결론:</strong> MCP는 2025년 현재 사실상 <strong>업계 표준(de facto standard)</strong>이 되었습니다.
+        AI와 외부 시스템을 연결할 때 MCP를 쓰면 한 번 구현으로 모든 AI에 연결 가능합니다.
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════════════╗ -->
+  <!-- ║  SLIDE 8 — Skills 섹션 타이틀║ -->
+  <!-- ╚══════════════════════════════╝ -->
+  <div class="slide theme-purple">
+    <div class="section-num">03</div>
+    <div style="margin-top:auto;margin-bottom:auto">
+      <div class="section-icon">📦</div>
+      <div class="section-title">스킬</div>
+      <div class="section-en">Skills</div>
+      <div class="section-tagline">
+        AI의 <strong>전문 자격증</strong><br>
+        재사용 가능한 전문 지식 패키지 — 필요할 때 자동으로 로드됩니다
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════════════╗ -->
+  <!-- ║  SLIDE 9 — Skills 개요       ║ -->
+  <!-- ╚══════════════════════════════╝ -->
+  <div class="slide theme-purple">
+    <div class="slide-label">03 · Skills</div>
+    <h2 class="slide-title">스킬 <span class="accent">구조</span>와 <span class="accent">3단계 로딩</span></h2>
+    <div class="content-body">
+      <div class="cols2" style="gap:16px">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div class="card">
+            <div class="card-title">📁 스킬 폴더 구성</div>
+            <ul>
+              <li><strong>SKILL.md</strong> (필수) — 메타데이터 + 지시사항</li>
+              <li><strong>scripts/</strong> (선택) — Python, Bash 스크립트</li>
+              <li><strong>references/</strong> (선택) — 참조 문서</li>
+              <li><strong>assets/</strong> (선택) — 템플릿, 폰트, 아이콘</li>
+            </ul>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="card" style="border-left:3px solid #ffd664">
+            <div class="card-title" style="color:#ffd664">1단계 — 항상 로드</div>
+            <ul><li>YAML 프론트매터</li><li>스킬 이름 · 설명</li><li>"언제 사용할지" 판단 정보</li></ul>
+          </div>
+          <div class="card" style="border-left:3px solid #64c8ff">
+            <div class="card-title">2단계 — 관련 시 로드</div>
+            <ul><li>SKILL.md 본문 전체</li><li>전체 지시사항 · 상세 가이드</li></ul>
+          </div>
+          <div class="card" style="border-left:3px solid #c586c0">
+            <div class="card-title" style="color:#c586c0">3단계 — 필요시 로드</div>
+            <ul><li>참조 문서 · 스크립트 · 추가 자산</li></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔════════════════════════════════╗ -->
+  <!-- ║  SLIDE 10 — Skills vs Others  ║ -->
+  <!-- ╚════════════════════════════════╝ -->
+  <div class="slide theme-purple">
+    <div class="slide-label">03 · Skills</div>
+    <h2 class="slide-title">프롬프트 vs 스킬 vs <span class="accent">서브 에이전트</span></h2>
+    <div class="content-body" style="gap:14px">
+      <table class="styled-table">
+        <thead>
+          <tr>
+            <th>특징</th>
+            <th>📝 프롬프트</th>
+            <th>📦 스킬</th>
+            <th>🤖 서브 에이전트</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>구조</strong></td><td>텍스트 지시사항</td><td>파일 시스템 폴더</td><td>독립적 AI 인스턴스</td></tr>
+          <tr><td><strong>맥락</strong></td><td>매번 반복 입력</td><td>자동 로드</td><td>독립적 컨텍스트</td></tr>
+          <tr><td><strong>전문성</strong></td><td>일반적</td><td>도메인별 패키지</td><td>깊이 있는 특화</td></tr>
+          <tr><td><strong>용도</strong></td><td>빠른 수정</td><td>재사용 가능한 표준</td><td>복잡한 작업 위임</td></tr>
+          <tr><td><strong>예시</strong></td><td>"React로 작성"</td><td>React 스킬 폴더</td><td>Frontend 서브 에이전트</td></tr>
+        </tbody>
+      </table>
+      <div class="hbox mt12">
+        <strong>팀 컨벤션도 스킬로!</strong><br>
+        <span style="font-size:13px;color:rgba(255,255,255,0.65)">
+          API 설계 표준, 코드 리뷰 체크리스트, 테스트 전략 등 팀의 노하우를
+          스킬로 패키징하면 모든 에이전트가 동일한 기준으로 작업합니다.
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔════════════════════════════════════╗ -->
+  <!-- ║  SLIDE 11 — Sub-agent 섹션 타이틀 ║ -->
+  <!-- ╚════════════════════════════════════╝ -->
+  <div class="slide theme-green">
+    <div class="section-num">04</div>
+    <div style="margin-top:auto;margin-bottom:auto">
+      <div class="section-icon">👥</div>
+      <div class="section-title">서브 에이전트</div>
+      <div class="section-en">Sub-agent</div>
+      <div class="section-tagline">
+        메인 에이전트가 <strong>프로젝트 매니저</strong>라면<br>
+        서브 에이전트들은 <strong>개발자 · 디자이너 · QA 엔지니어</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔════════════════════════════════╗ -->
+  <!-- ║  SLIDE 12 — Sub-agent 개요    ║ -->
+  <!-- ╚════════════════════════════════╝ -->
+  <div class="slide theme-green">
+    <div class="slide-label">04 · Sub-agent</div>
+    <h2 class="slide-title">서브 에이전트 <span class="accent">특징</span>과 <span class="accent">성능</span></h2>
+    <div class="content-body" style="gap:14px">
+      <div class="cols2">
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="card">
+            <div class="card-title">서브 에이전트 = 특화된 독립 AI</div>
+            <ul>
+              <li>각자의 독립 컨텍스트 윈도우</li>
+              <li>작업별 최적화된 도구·지시사항</li>
+              <li>메인 에이전트가 계획·조율·종합</li>
+            </ul>
+          </div>
+          <div class="card" style="border-left:3px solid #64ff96">
+            <div class="card-title" style="color:#64ff96">✅ 서브 에이전트 적합</div>
+            <ul>
+              <li>복잡한 다단계 작업 (10단계+)</li>
+              <li>병렬 처리가 필요한 경우</li>
+              <li>각 분야 전문성이 필요한 경우</li>
+              <li>컨텍스트 한계 초과 우려</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="stat-grid" style="grid-template-columns: 1fr 1fr; height:100%;">
+            <div class="stat-card">
+              <div class="stat-value">40~60%</div>
+              <div class="stat-label">작업 시간<br>단축</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">+90%</div>
+              <div class="stat-label">성공률<br>향상</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" style="color:#ffd664">-95%</div>
+              <div class="stat-label">비용<br>절감 가능</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" style="color:#c586c0">전문적</div>
+              <div class="stat-label">결과물<br>품질</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="text-muted mt8">* 출처: Anthropic 멀티 에이전트 연구 시스템 (2025) — 혼합 접근법 기준</div>
+    </div>
+  </div>
+
+  <!-- ╔════════════════════════════════╗ -->
+  <!-- ║  SLIDE 13 — 시나리오 타이틀   ║ -->
+  <!-- ╚════════════════════════════════╝ -->
+  <div class="slide theme-orange">
+    <div class="section-num">05</div>
+    <div style="margin-top:auto;margin-bottom:auto">
+      <div class="section-icon">🎯</div>
+      <div class="section-title">실전 시나리오</div>
+      <div class="section-en">Real-world Scenarios</div>
+      <div class="section-tagline">
+        이커머스 · 금융 · 헬스케어 — 3가지 산업 분야에서<br>
+        Agent + MCP + Skills + Sub-agent가 실제로 어떻게 동작하는지 살펴봅니다
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔════════════════════════════════╗ -->
+  <!-- ║  SLIDE 14 — 시나리오 1        ║ -->
+  <!-- ╚════════════════════════════════╝ -->
+  <div class="slide theme-orange">
+    <div class="slide-label">05 · Scenarios — 시나리오 1</div>
+    <h2 class="slide-title">🛒 이커머스 플랫폼 개발 <span class="accent">ShopAI</span></h2>
+    <div class="content-body" style="gap:12px">
+      <div class="hbox" style="padding:10px 16px">
+        <strong>상황:</strong> 스타트업 ShopAI, 3개월 내 MVP 출시 목표 · 프론트엔드 2명 · 백엔드 2명 · 2025년 Q1
+      </div>
+      <div class="cols2" style="flex:1">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div class="card">
+            <div class="card-title">서브 에이전트 팀</div>
+            <ul>
+              <li>Frontend — React/Next.js 스킬, UI/UX</li>
+              <li>Backend — Node.js/Express, RESTful API</li>
+              <li>Database — PostgreSQL 스키마, ORM</li>
+              <li>Security — OWASP Top 10, 인증/인가</li>
+              <li>QA — E2E 테스트, 성능 테스트</li>
+            </ul>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div class="card">
+            <div class="card-title">MCP 연동</div>
+            <ul>
+              <li>GitHub MCP — 코드 저장소 · PR 검토</li>
+              <li>Slack MCP — 팀 알림 자동화</li>
+              <li>Database MCP — 제품 데이터 · 재고</li>
+              <li>Payment MCP — 결제 · 주문 처리</li>
+            </ul>
+          </div>
+          <div class="card" style="border-left:3px solid #64ff96">
+            <div class="card-title" style="color:#64ff96">결과</div>
+            <ul>
+              <li>개발 기간 12주 → <strong>8주</strong> (33% 단축)</li>
+              <li>버그 밀도 40% 감소, 커버리지 85%</li>
+              <li>초기부터 보안 고려 → 취약점 0건</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔════════════════════════════════╗ -->
+  <!-- ║  SLIDE 15 — 시나리오 2·3      ║ -->
+  <!-- ╚════════════════════════════════╝ -->
+  <div class="slide theme-orange">
+    <div class="slide-label">05 · Scenarios — 시나리오 2 · 3</div>
+    <h2 class="slide-title">🏦 금융 리스크 <span class="accent">FinBank</span> &amp; 🏥 헬스케어 <span class="accent">MedAI</span></h2>
+    <div class="content-body">
+      <div class="cols2" style="flex:1;gap:16px">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div class="hbox" style="padding:8px 14px;font-size:13px">
+            대형 은행, AI 기반 실시간 리스크 분석 · 규제 준수
+          </div>
+          <div class="card">
+            <div class="card-title">서브 에이전트</div>
+            <ul>
+              <li>Data Analyst — 거래 패턴 · 이상 탐지</li>
+              <li>Compliance — Basel III · 보고서</li>
+              <li>Security Auditor — 감사 로그 분석</li>
+              <li>Model Validator — ML 모델 검증</li>
+            </ul>
+          </div>
+          <div class="card" style="border-left:3px solid #64ff96">
+            <div class="card-title" style="color:#64ff96">결과</div>
+            <ul>
+              <li>오탐율 60%, 미탐율 45% 감소</li>
+              <li>규제 보고 시간 80% 단축</li>
+              <li>운영 비용 40% 절감</li>
+            </ul>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div class="hbox" style="padding:8px 14px;font-size:13px">
+            대학병원, AI 기반 진단 보조 · HIPAA 준수 · 의료기기 인증
+          </div>
+          <div class="card">
+            <div class="card-title">서브 에이전트</div>
+            <ul>
+              <li>Medical Imaging — X-ray/CT/MRI</li>
+              <li>Lab Results — 혈액 검사 판독</li>
+              <li>Medical Records — EHR 분석</li>
+              <li>Clinical Decision — 치료 계획 제안</li>
+              <li>Privacy Officer — HIPAA 준수</li>
+            </ul>
+          </div>
+          <div class="card" style="border-left:3px solid #64ff96">
+            <div class="card-title" style="color:#64ff96">결과</div>
+            <ul>
+              <li>초기 진단 정확도 92%</li>
+              <li>문서 작성 70%, 영상 판독 50% 단축</li>
+              <li>약물 상호작용 경고 100% 감지</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔════════════════════════════════╗ -->
+  <!-- ║  SLIDE 16 — 용어 정리         ║ -->
+  <!-- ╚════════════════════════════════╝ -->
+  <div class="slide theme-dark">
+    <div class="slide-label">06 · 용어 정리</div>
+    <h2 class="slide-title">핵심 <span class="accent">용어</span> 정리</h2>
+    <div class="content-body">
+      <div class="glossary">
+        <div class="glossary-item">
+          <div class="glossary-term">에이전트</div>
+          <div class="glossary-en">Agent</div>
+          <div class="glossary-def">도구를 사용해 자율적으로 작업을 수행하는 AI 시스템</div>
+        </div>
+        <div class="glossary-item">
+          <div class="glossary-term">서브 에이전트</div>
+          <div class="glossary-en">Sub-agent</div>
+          <div class="glossary-def">특정 작업에 특화된 독립적 AI 인스턴스</div>
+        </div>
+        <div class="glossary-item">
+          <div class="glossary-term">모델 컨텍스트 프로토콜</div>
+          <div class="glossary-en">Model Context Protocol (MCP)</div>
+          <div class="glossary-def">AI 시스템을 위한 개방형 연결 표준</div>
+        </div>
+        <div class="glossary-item">
+          <div class="glossary-term">스킬</div>
+          <div class="glossary-en">Skill</div>
+          <div class="glossary-def">재사용 가능한 전문 지식 패키지</div>
+        </div>
+        <div class="glossary-item">
+          <div class="glossary-term">오케스트레이션</div>
+          <div class="glossary-en">Orchestration</div>
+          <div class="glossary-def">여러 AI 컴포넌트를 조율하는 프로세스</div>
+        </div>
+        <div class="glossary-item">
+          <div class="glossary-term">컨텍스트 윈도우</div>
+          <div class="glossary-en">Context Window</div>
+          <div class="glossary-def">AI가 한 번에 처리할 수 있는 정보량</div>
+        </div>
+        <div class="glossary-item">
+          <div class="glossary-term">피드백 루프</div>
+          <div class="glossary-en">Feedback Loop</div>
+          <div class="glossary-def">결과를 바탕으로 시스템을 개선하는 순환</div>
+        </div>
+        <div class="glossary-item">
+          <div class="glossary-term">연합 에이전트</div>
+          <div class="glossary-en">Federated Agent</div>
+          <div class="glossary-def">독립적 에이전트들의 협력 네트워크</div>
+        </div>
+        <div class="glossary-item">
+          <div class="glossary-term">계층형 아키텍처</div>
+          <div class="glossary-en">Hierarchical Architecture</div>
+          <div class="glossary-def">상위-하위 관계의 조직 구조</div>
+        </div>
+        <div class="glossary-item">
+          <div class="glossary-term">훅</div>
+          <div class="glossary-en">Hook</div>
+          <div class="glossary-def">특정 이벤트 시 자동 실행되는 작업</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔════════════════════════════════╗ -->
+  <!-- ║  SLIDE 17 — Summary           ║ -->
+  <!-- ╚════════════════════════════════╝ -->
+  <div class="slide theme-cover">
+    <div class="slide-label">Summary</div>
+    <h2 class="slide-title" style="font-size:28px;border:none;padding:0;margin-bottom:16px">
+      🎯 4가지 핵심 개념 요약
+    </h2>
+    <div class="content-body">
+      <div class="summary-grid">
+        <div class="summary-card">
+          <div class="sc-icon">🤖</div>
+          <div class="sc-title">에이전트 (Agent)</div>
+          <div class="sc-en">LLM + Tools + Autonomy</div>
+          <div class="sc-def">도구를 사용해 자율적으로 목표를 달성하는 AI 시스템</div>
+          <div class="sc-key">결과를 직접 만들어냄</div>
+        </div>
+        <div class="summary-card">
+          <div class="sc-icon">🔌</div>
+          <div class="sc-title">MCP</div>
+          <div class="sc-en">Model Context Protocol</div>
+          <div class="sc-def">AI와 외부 시스템을 연결하는 개방형 표준 — AI를 위한 USB-C</div>
+          <div class="sc-key">모든 시스템을 하나로 연결</div>
+        </div>
+        <div class="summary-card">
+          <div class="sc-icon">📦</div>
+          <div class="sc-title">스킬 (Skills)</div>
+          <div class="sc-en">Reusable Knowledge Package</div>
+          <div class="sc-def">AI의 전문 자격증 — 필요할 때 자동으로 로드되는 도메인 지식</div>
+          <div class="sc-key">상황별 전문 지식 제공</div>
+        </div>
+        <div class="summary-card">
+          <div class="sc-icon">👥</div>
+          <div class="sc-title">서브 에이전트</div>
+          <div class="sc-en">Sub-agent</div>
+          <div class="sc-def">특정 작업에 특화된 독립 AI — 병렬 작업으로 속도·품질 극대화</div>
+          <div class="sc-key">작업 시간 40~60% 단축</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔════════════════════════════════╗ -->
+  <!-- ║  SLIDE 18 — 2025 트렌드 & Q&A ║ -->
+  <!-- ╚════════════════════════════════╝ -->
+  <div class="slide theme-blue">
+    <div class="slide-label">Wrap-up</div>
+    <h2 class="slide-title">🚀 2025년 트렌드 &amp; <span class="accent">실습 과제</span></h2>
+    <div class="content-body" style="gap:14px">
+      <div class="cols2">
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="card">
+            <div class="card-title">2025년 주요 흐름</div>
+            <ul>
+              <li>단일 → <strong>다중 에이전트</strong>: 팀이 더 강함</li>
+              <li>MCP <strong>업계 표준</strong>화: 재사용 가능한 커넥터</li>
+              <li>지식 <strong>패키지화</strong>: 스킬로 자동 로드</li>
+              <li><strong>비용 최적화</strong>: 오케스트레이터는 고성능, 작업자는 경량 모델</li>
+            </ul>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="card">
+            <div class="card-title" style="color:#64ff96">💻 실습 프로젝트</div>
+            <ul>
+              <li>Hello Agent — 간단한 에이전트 만들기</li>
+              <li>MCP Connector — 나만의 MCP 서버 만들기</li>
+              <li>Custom Skill — 팀 규칙을 스킬로 변환</li>
+              <li>Multi-Agent — 서브 에이전트 팀 구축</li>
+            </ul>
+          </div>
+          <div class="hbox" style="padding:10px 14px;font-size:13px">
+            <strong>생각해볼 질문</strong><br>
+            현재 프로젝트에 에이전트를 어떻게 적용할 수 있을까요?<br>
+            팀의 어떤 지식을 스킬로 만들면 좋을까요?
+          </div>
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:auto;padding-top:12px">
+        <span style="font-size:13px;color:rgba(255,255,255,0.35)">
+          docs.anthropic.com &nbsp;|&nbsp; modelcontextprotocol.io &nbsp;|&nbsp; docs.anthropic.com/claude-code
+        </span>
+      </div>
+    </div>
+  </div>
+
+</div><!-- #slideshow -->
+
+<!-- Navigation -->
+<div id="nav">
+  <button class="nav-btn" id="prev-btn" onclick="changeSlide(-1)" disabled>◀ 이전</button>
+  <div class="dot-nav" id="dot-nav"></div>
+  <span id="slide-counter">1 / 18</span>
+  <button class="nav-btn" id="next-btn" onclick="changeSlide(1)">다음 ▶</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total  = slides.length;
+  let current  = 0;
+
+  // Build dots
+  const dotNav = document.getElementById('dot-nav');
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.title = 'Slide ' + (i + 1);
+    d.addEventListener('click', () => goTo(i));
+    dotNav.appendChild(d);
+  }
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    dotNav.children[current].classList.remove('active');
+    current = Math.max(0, Math.min(total - 1, n));
+    slides[current].classList.add('active');
+    dotNav.children[current].classList.add('active');
+    document.getElementById('slide-counter').textContent = (current + 1) + ' / ' + total;
+    document.getElementById('prev-btn').disabled = current === 0;
+    document.getElementById('next-btn').disabled = current === total - 1;
+  }
+
+  function changeSlide(dir) { goTo(current + dir); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown'  || e.key === ' ') changeSlide(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')                       changeSlide(-1);
+  });
+</script>
+</body>
+</html>

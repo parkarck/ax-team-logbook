@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>학습 노트 - AX팀 운영일지</title>
+  <meta name="description" content="AX팀 32주 AI 학습 프로그램의 모든 학습 노트를 한곳에서 확인하세요." />
+  <link rel="canonical" href="https://ax-team-logbook.vercel.app/study-notes" />
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/data/weeks.js"></script>
+  <style>
+    .notes-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .note-card {
+      background: #13131a;
+      border: 1px solid #1e1e2e;
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all 0.2s;
+    }
+
+    .note-card:hover {
+      border-color: rgba(124, 58, 237, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .note-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+
+    .note-week {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #a78bfa;
+      background: rgba(124, 58, 237, 0.12);
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+    }
+
+    .note-date {
+      font-size: 0.75rem;
+      color: #475569;
+    }
+
+    .note-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+      letter-spacing: -0.02em;
+    }
+
+    .note-desc {
+      font-size: 0.85rem;
+      color: #64748b;
+      margin-bottom: 0.75rem;
+    }
+
+    .note-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .note-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: #a78bfa;
+      text-decoration: none;
+      padding: 0.4rem 0.75rem;
+      background: rgba(124, 58, 237, 0.08);
+      border: 1px solid rgba(124, 58, 237, 0.15);
+      border-radius: 8px;
+      transition: all 0.15s;
+    }
+
+    .note-link:hover {
+      background: rgba(124, 58, 237, 0.15);
+      border-color: rgba(124, 58, 237, 0.3);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: #475569;
+    }
+
+    .empty-state-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="/" class="logo">
+      <div class="logo-icon">📚</div>
+      <span class="logo-text"><span>학습 노트</span></span>
+    </a>
+    <nav>
+      <a href="/">홈</a>
+      <a href="https://github.com/parkarck/ax-team-logbook" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <div class="hero-badge">
+      📚 Weekly Learning Notes
+    </div>
+    <h1>AX팀 학습 노트</h1>
+    <p>매주 수요일 AI 기술을 탐구하며 작성한 학습 노트입니다. 비유와 실전 예제로 쉽게 이해하세요.</p>
+  </div>
+
+  <main>
+    <div class="section-header">
+      <h2>전체 노트</h2>
+      <div class="section-divider"></div>
+    </div>
+
+    <div class="notes-list" id="notesList">
+      <!-- JS로 동적 렌더링 -->
+    </div>
+  </main>
+
+  <footer>
+    <p>
+      AX Team Logbook &middot;
+      <a href="/">홈으로</a>
+      &middot; Hosted on Vercel
+    </p>
+  </footer>
+
+  <script>
+    (function() {
+      const container = document.getElementById('notesList');
+      const weeksWithContent = WEEKS_DATA.filter(function(w) {
+        return w.contents && w.contents.length > 0;
+      }).reverse();
+
+      if (weeksWithContent.length === 0) {
+        container.innerHTML = '<div class="empty-state">' +
+          '<div class="empty-state-icon">📝</div>' +
+          '<p>아직 학습 노트가 없습니다. 첫 세션 후 업데이트됩니다.</p>' +
+          '</div>';
+        return;
+      }
+
+      let html = '';
+      weeksWithContent.forEach(function(week) {
+        const d = new Date(week.date + 'T00:00:00');
+        const dateStr = (d.getMonth() + 1) + '월 ' + d.getDate() + '일';
+
+        let linksHtml = '';
+        week.contents.forEach(function(c) {
+          const href = c.htmlPath || c.path || '#';
+          linksHtml += '<a href="' + href + '" class="note-link">' +
+            '<span>📄</span> ' + c.title +
+            '</a>';
+        });
+
+        html += '<div class="note-card">' +
+          '<div class="note-header">' +
+            '<span class="note-week">WEEK ' + week.week + '</span>' +
+            '<span class="note-date">' + dateStr + '</span>' +
+          '</div>' +
+          '<div class="note-title">' + (week.title || 'Week ' + week.week) + '</div>' +
+          (week.description ? '<div class="note-desc">' + week.description + '</div>' : '') +
+          '<div class="note-links">' + linksHtml + '</div>' +
+        '</div>';
+      });
+
+      container.innerHTML = html;
+    })();
+  </script>
+
+</body>
+</html>

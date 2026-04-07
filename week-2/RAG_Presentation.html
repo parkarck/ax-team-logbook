@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG (검색 증강 생성) - AX팀 2주차</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 1024px;
+            height: 768px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            padding: 60px 80px;
+            opacity: 0;
+            transform: translateX(50px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            pointer-events: none;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: auto;
+        }
+
+        .slide h1 {
+            font-size: 48px;
+            color: #667eea;
+            margin-bottom: 30px;
+            line-height: 1.2;
+        }
+
+        .slide h2 {
+            font-size: 36px;
+            color: #764ba2;
+            margin-bottom: 25px;
+            line-height: 1.3;
+        }
+
+        .slide h3 {
+            font-size: 28px;
+            color: #667eea;
+            margin-bottom: 20px;
+            margin-top: 20px;
+        }
+
+        .slide p, .slide li {
+            font-size: 20px;
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .slide ul {
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+
+        .slide li {
+            margin-bottom: 10px;
+        }
+
+        .emoji {
+            font-size: 40px;
+            margin-right: 10px;
+        }
+
+        .content-box {
+            padding: 25px;
+            background: #f8f9ff;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+            margin-top: 20px;
+        }
+
+        .analogy-box {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .example-box {
+            background: #e8f5e9;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 15px 0;
+            border-left: 5px solid #4caf50;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 16px;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover {
+            background: #f5f5f5;
+        }
+
+        .flow-diagram {
+            text-align: center;
+            font-size: 18px;
+            line-height: 2;
+            color: #667eea;
+        }
+
+        .navigation {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .nav-btn {
+            width: 50px;
+            height: 50px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-btn:hover {
+            background: #764ba2;
+            transform: scale(1.1);
+        }
+
+        .nav-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: scale(1);
+        }
+
+        .progress {
+            color: #667eea;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .slide-counter {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: rgba(102, 126, 234, 0.9);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .title-slide {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .title-slide h1 {
+            font-size: 56px;
+            margin-bottom: 20px;
+        }
+
+        .subtitle {
+            font-size: 24px;
+            color: #764ba2;
+            margin-bottom: 30px;
+        }
+
+        .team-info {
+            font-size: 20px;
+            color: #667eea;
+            margin-top: 40px;
+        }
+
+        .footer-note {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">12</span>
+        </div>
+
+        <!-- 슬라이드 1: 제목 -->
+        <div class="slide active title-slide">
+            <span class="emoji">📚</span>
+            <h1>RAG</h1>
+            <h2 style="color: #667eea; margin-bottom: 30px;">검색 증강 생성</h2>
+            <p class="subtitle">초등학교 수준으로 쉽게 배우기</p>
+            <p class="subtitle">AX 팀을 위하여</p>
+            <p class="team-info">🎨 AX팀 2주차 세션 자료</p>
+            <div class="footer-note">→ 키 또는 다음 버튼을 눌러 계속하세요</div>
+        </div>
+
+        <!-- 슬라이드 2: RAG란? -->
+        <div class="slide">
+            <span class="emoji">🤔</span>
+            <h1>RAG란 무엇인가?</h1>
+
+            <div class="content-box">
+                <p><strong>RAG</strong> = <strong>검색 증강 생성 (Retrieval-Augmented Generation)</strong></p>
+                <p>똑똑한 로봇에게 도서관을 이용하게 해주는 것!</p>
+                <ul style="margin-top: 20px;">
+                    <li><strong>검색 (Retrieval)</strong> = 정보 찾기</li>
+                    <li><strong>증강 (Augmented)</strong> = 더하기</li>
+                    <li><strong>생성 (Generation)</strong> = 새로 만들기</li>
+                </ul>
+                <p style="margin-top: 20px;"><strong>→ 더 나은 답변을 만들기 위해 정보를 찾는 것!</strong></p>
+            </div>
+        </div>
+
+        <!-- 슬라이드 3: 도서관 비유 -->
+        <div class="slide">
+            <span class="emoji">📖</span>
+            <h1>도서관 비유</h1>
+
+            <div class="content-box">
+                <p><strong>세상의 모든 책</strong>을 다 읽었지만 세부 정보를 잊어버린 친구...</p>
+                <p style="margin-top: 20px;"><strong>RAG = 친구에게 도서관 이용증을 씌워주는 것!</strong></p>
+                <ol style="margin-top: 20px; margin-left: 20px;">
+                    <li>도서관에서 빠르게 검색</li>
+                    <li>중요한 부분을 읽기</li>
+                    <li>정확한 답변 제공</li>
+                </ol>
+            </div>
+
+            <div class="analogy-box" style="margin-top: 30px; text-align: center;">
+                📚 AI + 도서관 이용증 = 더 나은 답변! 🎯
+            </div>
+        </div>
+
+        <!-- 슬라이드 4: 작동 원리 1단계 -->
+        <div class="slide">
+            <span class="emoji">🗂️</span>
+            <h1>작동 원리 (1단계)</h1>
+
+            <h2>지식 저장소</h2>
+
+            <div class="content-box">
+                <p><strong>수백만 권의 책이 있는 거대한 디지털 도서관!</strong></p>
+                <ul style="margin-top: 20px;">
+                    <li><strong>문서</strong> - 책, 기사, 웹페이지</li>
+                    <li><strong>청크</strong> - 문서의 작은 조각들</li>
+                    <li><strong>임베딩</strong> - 의미를 위한 특별한 코드</li>
+                    <li><strong>벡터 데이터베이스</strong> - 코드를 저장하는 곳</li>
+                </ul>
+            </div>
+
+            <div class="analogy-box" style="margin-top: 20px;">
+                <span class="emoji">🗄️</span> 서랍장 같아요!
+            </div>
+        </div>
+
+        <!-- 슬라이드 5: 작동 원리 2단계 -->
+        <div class="slide">
+            <span class="emoji">❓</span>
+            <h1>작동 원리 (2단계)</h1>
+
+            <h2>질문하기</h2>
+
+            <div class="content-box">
+                <p><strong>질문을 해요!</strong></p>
+                <p style="font-size: 24px; color: #667eea; margin: 20px 0;">"판다는 뭘 먹어?"</p>
+                <p>RAG 시스템은:</p>
+                <ol style="margin-left: 20px;">
+                    <li>질문을 이해해요</li>
+                    <li>특별한 코드(임베딩)로 변환해요</li>
+                    <li>이 코드로 검색해요</li>
+                </ol>
+            </div>
+
+            <div class="analogy-box" style="margin-top: 20px;">
+                <span class="emoji">👨‍🏫</span> 사서에게 묻는 것과 같아요!
+            </div>
+        </div>
+
+        <!-- 슬라이드 6: 작동 원리 3단계 -->
+        <div class="slide">
+            <span class="emoji">🔍</span>
+            <h1>작동 원리 (3단계)</h1>
+
+            <h2>검색하기</h2>
+
+            <div class="content-box">
+                <p><strong>시스템이 관련 정보를 검색해요!</strong></p>
+                <p>이런 상황과 같아요:</p>
+                <ul style="margin-top: 15px;">
+                    <li>카탈로그에서 "판다 먹이" 검색</li>
+                    <li>판다와 대나무에 대한 책 찾기</li>
+                    <li>가장 관련성 높은 장 선택</li>
+                </ul>
+                <p style="margin-top: 15px; color: #667eea;"><strong>→ 질문과 가장 비슷한 정보를 찾아요!</strong></p>
+            </div>
+
+            <div class="analogy-box" style="margin-top: 20px;">
+                <span class="emoji">⚡</span> 검색 엔진 사용하기!
+            </div>
+        </div>
+
+        <!-- 슬라이드 7: 작동 원리 4단계 -->
+        <div class="slide">
+            <span class="emoji">✨</span>
+            <h1>작동 원리 (4단계)</h1>
+
+            <h2>증강 생성</h2>
+
+            <div class="content-box">
+                <p><strong>AI가 정보를 사용해서 답변을 만들어요!</strong></p>
+                <p>AI는 이제 다음을 가지고 있어요:</p>
+                <ul style="margin-top: 15px;">
+                    <li>✅ 당신의 원래 질문</li>
+                    <li>✅ 찾은 관련 정보</li>
+                </ul>
+                <p style="margin-top: 15px; color: #667eea;"><strong>→ 이것들을 결합해서 도움이 되는 답변을 만들어요!</strong></p>
+            </div>
+
+            <div class="analogy-box" style="margin-top: 20px;">
+                <span class="emoji">📝</span> 참고 도서를 사용해서 보고서 쓰기!
+            </div>
+        </div>
+
+        <!-- 슬라이드 8: RAG가 왜 중요할까? -->
+        <div class="slide">
+            <span class="emoji">💡</span>
+            <h1>RAG가 왜 중요할까?</h1>
+
+            <div class="content-box">
+                <ol style="margin-left: 20px;">
+                    <li><strong>✓ 정확한 답변</strong> - 실제 출처를 확인</li>
+                    <li><strong>✓ 최신 정보</strong> - 재학습 없이 최신화</li>
+                    <li><strong>✓ 오류 감소</strong> - 실수와 환각 감소</li>
+                    <li><strong>✓ 프라이버시</strong> - 개인 문서를 안전하게 사용</li>
+                    <li><strong>✓ 설명 가능</strong> - 출처를 표시</li>
+                </ol>
+            </div>
+
+            <div class="analogy-box" style="margin-top: 25px; text-align: center;">
+                <span class="emoji">📖</span> RAG = 책을 보며 치는 시험!
+            </div>
+        </div>
+
+        <!-- 슬라이드 9: 실제 사례 -->
+        <div class="slide">
+            <span class="emoji">🌟</span>
+            <h1>실제 사례</h1>
+
+            <div class="example-box">
+                <h3 style="margin-top: 0;">🏢 고객 서비스</h3>
+                <p><strong>문제점:</strong> 지원 담당자가 수백 개의 정책을 기억해야 함</p>
+                <p><strong>해결책:</strong> RAG가 회사 문서를 검색해서 정확한 정책을 찾음!</p>
+            </div>
+
+            <div class="example-box">
+                <h3 style="margin-top: 0;">🏥 의료 연구</h3>
+                <p><strong>문제점:</strong> 매일 새로운 연구 발표, 의사가 모두 읽을 수 없음</p>
+                <p><strong>해결책:</strong> RAG가 최신 저널을 검색해서 치료법을 요약!</p>
+            </div>
+        </div>
+
+        <!-- 슬라이드 10: 핵심 구성 요소 -->
+        <div class="slide">
+            <span class="emoji">🧩</span>
+            <h1>핵심 구성 요소</h1>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>구성 요소</th>
+                            <th>기능</th>
+                            <th>비유</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>문서</td>
+                            <td>정보 출처</td>
+                            <td>📚 도서관 책들</td>
+                        </tr>
+                        <tr>
+                            <td>청크</td>
+                            <td>문서의 작은 조각</td>
+                            <td>📖 책의 챕터</td>
+                        </tr>
+                        <tr>
+                            <td>임베딩</td>
+                            <td>의미를 위한 특별한 코드</td>
+                            <td>🏷️ 도서 청구 번호</td>
+                        </tr>
+                        <tr>
+                            <td>벡터 데이터베이스</td>
+                            <td>코드를 저장하고 검색</td>
+                            <td>🗂️ 도서관 카탈로그</td>
+                        </tr>
+                        <tr>
+                            <td>LLM (생성기)</td>
+                            <td>답변을 생성</td>
+                            <td>✍️ 보고서 작성자</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 슬라이드 11: RAG 흐름 -->
+        <div class="slide">
+            <span class="emoji">🔄</span>
+            <h1>RAG 흐름</h1>
+
+            <div class="flow-diagram">
+                <p style="font-size: 32px; margin-bottom: 30px;">당신의 질문</p>
+                <p style="font-size: 40px;">⬇️</p>
+                <p style="font-size: 28px; margin: 20px 0;">🔍 지식 저장소에서 검색</p>
+                <p style="font-size: 40px;">⬇️</p>
+                <p style="font-size: 28px; margin: 20px 0;">✨ 관련 정보 찾기</p>
+                <p style="font-size: 40px;">⬇️</p>
+                <p style="font-size: 28px; margin: 20px 0;">🔗 질문 + 정보 결합</p>
+                <p style="font-size: 40px;">⬇️</p>
+                <p style="font-size: 28px; margin: 20px 0;">📝 답변 생성</p>
+                <p style="font-size: 40px;">⬇️</p>
+                <p style="font-size: 32px; margin-top: 30px; color: #4caf50;">✅ 도움이 되는 응답!</p>
+            </div>
+        </div>
+
+        <!-- 슬라이드 12: 요약 -->
+        <div class="slide">
+            <span class="emoji">🎉</span>
+            <h1>요약</h1>
+
+            <div class="content-box">
+                <p><strong>RAG = AI + 도서관 이용증</strong></p>
+                <ul style="margin-top: 20px;">
+                    <li>✅ 신뢰할 수 있는 출처에서 정확한 정보 찾기</li>
+                    <li>✅ 더 좋고 더 도움이 되는 답변</li>
+                    <li>✅ 재학습 없이 최신 정보 유지</li>
+                    <li>✅ 정보의 출처 표시</li>
+                </ul>
+                <p style="margin-top: 20px;"><strong>기억하세요: RAG는 AI를 더 도움이 되고, 정확하고, 신뢰할 수 있게 만들어요!</strong></p>
+            </div>
+
+            <div class="analogy-box" style="margin-top: 30px; text-align: center; font-size: 24px;">
+                <span class="emoji">🌟</span> 감사합니다! <span class="emoji">🌟</span>
+                <div style="margin-top: 15px; font-size: 18px;">질문이 있으세요? 팀 리더에게 물어보세요!</div>
+            </div>
+        </div>
+
+        <!-- 네비게이션 -->
+        <div class="navigation">
+            <button class="nav-btn" id="prev-btn" onclick="changeSlide(-1)">◀</button>
+            <span class="progress" id="progress">1 / 12</span>
+            <button class="nav-btn" id="next-btn" onclick="changeSlide(1)">▶</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        const progressDisplay = document.getElementById('progress');
+        const currentSlideDisplay = document.getElementById('current-slide');
+        const totalSlidesDisplay = document.getElementById('total-slides');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+
+        totalSlidesDisplay.textContent = totalSlides;
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.remove('active');
+                if (i === index) {
+                    slide.classList.add('active');
+                }
+            });
+
+            progressDisplay.textContent = `${index + 1} / ${totalSlides}`;
+            currentSlideDisplay.textContent = index + 1;
+
+            prevBtn.disabled = index === 0;
+            nextBtn.disabled = index === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            currentSlide += direction;
+            if (currentSlide < 0) currentSlide = 0;
+            if (currentSlide >= totalSlides) currentSlide = totalSlides - 1;
+            showSlide(currentSlide);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                changeSlide(1);
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                changeSlide(-1);
+            }
+        });
+
+        showSlide(0);
+    </script>
+</body>
+</html>
