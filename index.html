@@ -4,95 +4,142 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- Primary Meta Tags -->
   <title>AX팀 운영일지 | AI Experience Team</title>
-  <meta name="title" content="AX팀 운영일지 | AI Experience Team" />
   <meta name="description" content="32주간의 AI 기술 탐구 여정. 매주 수요일, AI Agent, MCP, RAG, LLM 등 AI 기술의 최전선을 탐구합니다." />
-  <meta name="keywords" content="AI, Agent, MCP, RAG, LLM, AI Experience Team, AX팀, 운영일지, 세션, 학습노트, 인공지능" />
-  <meta name="author" content="AX Team" />
-  <meta name="robots" content="index, follow" />
-  <link rel="canonical" href="https://ax-team-logbook.vercel.app/" />
-
-  <!-- Open Graph / Facebook -->
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://ax-team-logbook.vercel.app/" />
-  <meta property="og:title" content="AX팀 운영일지 | AI Experience Team" />
-  <meta property="og:description" content="32주간의 AI 기술 탐구 여정. 매주 수요일, AI Agent, MCP, RAG, LLM 등 AI 기술의 최전선을 탐구합니다." />
-  <meta property="og:image" content="https://ax-team-logbook.vercel.app/og-image.png" />
-  <meta property="og:site_name" content="AX팀 운영일지" />
-  <meta property="og:locale" content="ko_KR" />
-
-  <!-- Twitter -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:url" content="https://ax-team-logbook.vercel.app/" />
-  <meta name="twitter:title" content="AX팀 운영일지 | AI Experience Team" />
-  <meta name="twitter:description" content="32주간의 AI 기술 탐구 여정. 매주 수요일, AI Agent, MCP, RAG, LLM 등 AI 기술의 최전선을 탐구합니다." />
-  <meta name="twitter:image" content="https://ax-team-logbook.vercel.app/og-image.png" />
-
-  <!-- Additional SEO -->
   <meta name="theme-color" content="#7c3aed" />
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-  <link rel="manifest" href="/site.webmanifest" />
-
-  <!-- Structured Data (JSON-LD) -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "AX팀 운영일지",
-    "alternateName": "AX Team Logbook",
-    "url": "https://ax-team-logbook.vercel.app/",
-    "description": "32주간의 AI 기술 탐구 여정. 매주 수요일, AI 기술의 최전선을 탐구합니다.",
-    "inLanguage": "ko",
-    "publisher": {
-      "@type": "Organization",
-      "name": "AX Team",
-      "url": "https://ax-team-logbook.vercel.app/"
-    }
-  }
-  </script>
-
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Blog",
-    "name": "AX팀 운영일지",
-    "description": "32주간의 AI 기술 탐구 여정",
-    "url": "https://ax-team-logbook.vercel.app/",
-    "inLanguage": "ko",
-    "blogPost": [
-      {
-        "@type": "BlogPosting",
-        "headline": "AI Agent, MCP, Skills, Sub-agent 개념",
-        "datePublished": "2026-04-01",
-        "description": "비유와 실전 시나리오로 배우는 AI 에이전트 생태계",
-        "url": "https://ax-team-logbook.vercel.app/week-1/ai-agent-guide",
-        "keywords": "AI Agent, MCP, Skills, Sub-agent"
-      },
-      {
-        "@type": "BlogPosting",
-        "headline": "RAG (검색 증강 생성) 개념과 원리",
-        "datePublished": "2026-04-08",
-        "description": "도서관 사서 비유로 풀어보는 검색 증강 생성의 모든 것",
-        "url": "https://ax-team-logbook.vercel.app/week-2/rag-guide",
-        "keywords": "RAG, 검색증강생성, AI, LLM"
-      }
-    ]
-  }
-  </script>
-
-  <!-- Preconnect to external domains for performance -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-  <!-- External Stylesheet -->
+  <link rel="canonical" href="https://ax-team-logbook.vercel.app/" />
   <link rel="stylesheet" href="/styles.css">
-
-  <!-- Weeks Data -->
   <script src="/data/weeks.js"></script>
+
+  <style>
+    /* Rocky Hero Section */
+    .rocky-hero {
+      max-width: 900px;
+      margin: 3rem auto 2rem;
+      padding: 0 2rem;
+      display: flex;
+      align-items: flex-end;
+      gap: 2rem;
+    }
+
+    .rocky-character {
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .rocky-gif {
+      width: 140px;
+      height: 140px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 20px rgba(124, 58, 237, 0.4));
+      animation: rocky-float 3s ease-in-out infinite;
+    }
+
+    @keyframes rocky-float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .rocky-speech {
+      position: relative;
+      background: #13131a;
+      border: 1px solid rgba(124, 58, 237, 0.4);
+      border-radius: 16px;
+      padding: 1.5rem 2rem;
+      flex: 1;
+      box-shadow: 0 0 30px rgba(124, 58, 237, 0.1);
+    }
+
+    .rocky-speech::before {
+      content: '';
+      position: absolute;
+      left: -12px;
+      bottom: 28px;
+      width: 0;
+      height: 0;
+      border-top: 10px solid transparent;
+      border-bottom: 10px solid transparent;
+      border-right: 12px solid rgba(124, 58, 237, 0.4);
+    }
+
+    .rocky-speech::after {
+      content: '';
+      position: absolute;
+      left: -10px;
+      bottom: 29px;
+      width: 0;
+      height: 0;
+      border-top: 9px solid transparent;
+      border-bottom: 9px solid transparent;
+      border-right: 11px solid #13131a;
+    }
+
+    .rocky-name {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #a78bfa;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .rocky-text {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #e2e8f0;
+      line-height: 1.6;
+      letter-spacing: -0.01em;
+    }
+
+    .rocky-text .highlight {
+      color: #a78bfa;
+    }
+
+    .rocky-subtext {
+      font-size: 0.85rem;
+      color: #64748b;
+      margin-top: 0.5rem;
+      line-height: 1.5;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1.1em;
+      background: #a78bfa;
+      margin-left: 2px;
+      vertical-align: text-bottom;
+      animation: blink 1s step-end infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    @media (max-width: 640px) {
+      .rocky-hero {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        margin: 2rem auto 1.5rem;
+        padding: 0 1.25rem;
+      }
+
+      .rocky-speech::before,
+      .rocky-speech::after {
+        left: 50%;
+        bottom: auto;
+        top: -12px;
+        transform: translateX(-50%) rotate(90deg);
+      }
+
+      .rocky-gif {
+        width: 110px;
+        height: 110px;
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -109,12 +156,16 @@
     </nav>
   </header>
 
-  <div class="hero">
-    <div class="hero-badge">
-      🤖 AI Experience Team · 32주 프로그램
+  <!-- Rocky Hero -->
+  <div class="rocky-hero">
+    <div class="rocky-character">
+      <img src="/rocky.gif" alt="Rocky" class="rocky-gif" />
     </div>
-    <h1>AX팀 AI Experience 여정</h1>
-    <p>매주 수요일, AI 기술의 최전선을 탐구합니다. 32주간의 학습 기록을 함께 만들어갑니다.</p>
+    <div class="rocky-speech">
+      <div class="rocky-name">🪐 Rocky — Project Hail Mary</div>
+      <div class="rocky-text" id="rockyText"></div>
+      <div class="rocky-subtext">매주 수요일, AI 기술의 최전선을 함께 탐구합니다. 32주간의 여정에 오신 걸 환영해요!</div>
+    </div>
   </div>
 
   <!-- Progress -->
@@ -150,9 +201,7 @@
       <div class="section-divider"></div>
     </div>
 
-    <div class="timeline" id="timelineContainer">
-      <!-- JS로 동적 렌더링 -->
-    </div>
+    <div class="timeline" id="timelineContainer"></div>
 
     <div id="about" class="section-header" style="margin-top: 4rem;">
       <h2>AX팀 소개</h2>
@@ -192,22 +241,59 @@
   </footer>
 
   <script>
+    // Rocky 타이핑 효과
+    (function() {
+      const messages = [
+        '안녕! 나는 Rocky야. \n지구인 친구들의 AI 탐구를 응원해! 🌟',
+        '매주 수요일마다 새로운 AI 기술을 배우는 거, 나도 배우고 싶어!',
+        '32주 완주하면 나만큼 똑똑해질 수 있을지도? 같이 해보자! ✨',
+      ];
+      let msgIdx = 0;
+      let charIdx = 0;
+      let isDeleting = false;
+      const el = document.getElementById('rockyText');
+
+      function type() {
+        const current = messages[msgIdx];
+        if (!isDeleting) {
+          el.innerHTML = current.substring(0, charIdx + 1).replace(/\n/g, '<br>') + '<span class="cursor"></span>';
+          charIdx++;
+          if (charIdx === current.length) {
+            isDeleting = false;
+            setTimeout(function() { isDeleting = true; startTyping(); }, 2800);
+            return;
+          }
+        } else {
+          el.innerHTML = current.substring(0, charIdx - 1).replace(/\n/g, '<br>') + '<span class="cursor"></span>';
+          charIdx--;
+          if (charIdx === 0) {
+            isDeleting = false;
+            msgIdx = (msgIdx + 1) % messages.length;
+            setTimeout(startTyping, 400);
+            return;
+          }
+        }
+        setTimeout(type, isDeleting ? 30 : 55);
+      }
+
+      function startTyping() { setTimeout(type, 100); }
+      startTyping();
+    })();
+
+    // 타임라인 렌더링
     (function() {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
       const TAG_CLASSES = {
-        'AI Agent': 'tag-ai',
-        'MCP': 'tag-mcp',
-        'RAG': 'tag-rag',
-        'LLM': 'tag-llm'
+        'AI Agent': 'tag-ai', 'MCP': 'tag-mcp',
+        'RAG': 'tag-rag', 'LLM': 'tag-llm'
       };
 
       function getWeekStatus(week) {
         const weekDate = new Date(week.date + 'T00:00:00');
         const weekEnd = new Date(weekDate);
         weekEnd.setDate(weekEnd.getDate() + 6);
-
         if (week.contents && week.contents.length > 0) return 'completed';
         if (today >= weekDate && today <= weekEnd) return 'current';
         if (today > weekEnd) return 'past';
@@ -216,9 +302,7 @@
 
       function formatDate(dateStr) {
         const d = new Date(dateStr + 'T00:00:00');
-        const month = d.getMonth() + 1;
-        const day = d.getDate();
-        return `${month}월 ${day}일`;
+        return (d.getMonth() + 1) + '월 ' + d.getDate() + '일';
       }
 
       function renderTimeline() {
@@ -226,16 +310,18 @@
         let html = '';
         let completedCount = 0;
         let notesCount = 0;
+        let sessionNum = 0;
 
         WEEKS_DATA.forEach(function(week) {
           const status = getWeekStatus(week);
           if (status === 'completed') {
             completedCount++;
             notesCount += week.contents.length;
+            sessionNum++;
           }
 
           if (status === 'completed' || status === 'current' || status === 'past') {
-            html += renderFullCard(week, status);
+            html += renderFullCard(week, status, status === 'completed' ? sessionNum : null);
           } else {
             html += renderMinimalCard(week);
           }
@@ -243,7 +329,6 @@
 
         container.innerHTML = html;
 
-        // Update progress
         const pct = Math.round((completedCount / 32) * 100);
         document.getElementById('progressFill').style.width = pct + '%';
         document.getElementById('progressText').textContent = completedCount + '/32 완료 (' + pct + '%)';
@@ -252,13 +337,12 @@
         document.getElementById('statRemaining').textContent = 32 - completedCount;
       }
 
-      function renderFullCard(week, status) {
+      function renderFullCard(week, status, sNum) {
         const dotClass = status === 'completed' ? 'timeline-dot-completed'
                        : status === 'current' ? 'timeline-dot-current'
                        : 'timeline-dot-upcoming';
         const cardClass = status === 'completed' ? 'timeline-card-completed'
-                        : status === 'current' ? 'timeline-card-current'
-                        : '';
+                        : status === 'current' ? 'timeline-card-current' : '';
 
         let tagsHtml = '';
         if (week.tags) {
@@ -275,35 +359,25 @@
           contentsHtml = '<div class="card-contents">';
           week.contents.forEach(function(c) {
             const href = c.htmlPath || c.path || '#';
-            contentsHtml += '<a href="' + href + '" class="content-link">' +
-              '<span class="content-link-icon">📄</span>' +
-              c.title +
-              '</a>';
+            contentsHtml += '<a href="' + href + '" class="content-link"><span class="content-link-icon">📄</span>' + c.title + '</a>';
           });
           contentsHtml += '</div>';
         }
 
-        let currentBadge = '';
-        if (status === 'current') {
-          currentBadge = '<span class="current-badge">🔵 이번 주</span>';
-        }
-
-        const title = week.title || '';
-        const desc = week.description || '';
-        const hasContent = title || desc || (week.contents && week.contents.length > 0);
+        const sessionLabel = sNum ? 'S' + String(sNum).padStart(2, '0') + ' · ' : '';
+        const currentBadge = status === 'current' ? '<div style="margin-bottom:0.5rem"><span class="current-badge">🔵 이번 주</span></div>' : '';
 
         return '<div class="timeline-item">' +
           '<div class="timeline-dot ' + dotClass + '"></div>' +
           '<div class="timeline-card ' + cardClass + '">' +
             '<div class="card-header">' +
-              '<span class="card-week-label">WEEK ' + week.week + '</span>' +
+              '<span class="card-week-label">' + sessionLabel + 'WEEK ' + week.week + '</span>' +
               '<span class="card-date">' + formatDate(week.date) + '</span>' +
             '</div>' +
-            (currentBadge ? '<div style="margin-bottom:0.5rem">' + currentBadge + '</div>' : '') +
-            (title ? '<div class="card-title">' + title + '</div>' : '') +
-            (desc ? '<div class="card-desc">' + desc + '</div>' : '') +
-            tagsHtml +
-            contentsHtml +
+            currentBadge +
+            (week.title ? '<div class="card-title">' + week.title + '</div>' : '') +
+            (week.description ? '<div class="card-desc">' + week.description + '</div>' : '') +
+            tagsHtml + contentsHtml +
           '</div>' +
         '</div>';
       }
