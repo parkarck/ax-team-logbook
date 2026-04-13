@@ -19,7 +19,16 @@ const WEEKS_DATA = [
       { title: "RAG 교육 콘텐츠", htmlPath: "week-2/rag-guide.html" }
     ]
   },
-  { week: 3, date: "2026-04-15", contents: [] },
+  {
+    week: 3,
+    date: "2026-04-15",
+    title: "API 개념과 원리",
+    description: "'식당 웨이터' 비유로 쉽게 이해하는 API와 REST API 기초",
+    tags: ["API"],
+    contents: [
+      { title: "API 교육 자료", htmlPath: "week-3/api-guide.html" }
+    ]
+  },
   { week: 4, date: "2026-04-22", contents: [] },
   { week: 5, date: "2026-04-29", contents: [] },
   { week: 6, date: "2026-05-06", contents: [] },

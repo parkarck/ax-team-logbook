@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API (Application Programming Interface) - AX팀 학습 노트</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif;
+      background: #0f0f11;
+      color: #e2e8f0;
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    header {
+      border-bottom: 1px solid #1e1e2e;
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      background: rgba(15, 15, 17, 0.95);
+      backdrop-filter: blur(12px);
+      z-index: 100;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #7c3aed, #2563eb);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .logo-text {
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .logo-text span {
+      color: #7c3aed;
+    }
+
+    nav a {
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 0.875rem;
+      margin-left: 1.5rem;
+      transition: color 0.2s;
+    }
+
+    nav a:hover { color: #e2e8f0; }
+
+    /* Main Content */
+    .container {
+      max-width: 840px;
+      margin: 0 auto;
+      padding: 3rem 2rem 6rem;
+    }
+
+    /* Article Header */
+    .article-header {
+      margin-bottom: 3rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid #1e1e2e;
+    }
+
+    .article-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(124, 58, 237, 0.15);
+      border: 1px solid rgba(124, 58, 237, 0.3);
+      color: #a78bfa;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.35rem 0.9rem;
+      border-radius: 100px;
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .article-title {
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #e2e8f0 0%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .article-meta {
+      display: flex;
+      gap: 1.5rem;
+      font-size: 0.875rem;
+      color: #64748b;
+    }
+
+    /* Markdown Content */
+    .markdown-content {
+      font-size: 1.05rem;
+    }
+
+    .markdown-content h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin: 2rem 0 1rem;
+      padding-left: 1rem;
+      border-left: 3px solid #7c3aed;
+      letter-spacing: -0.02em;
+    }
+
+    .markdown-content h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin: 1.75rem 0 0.75rem;
+      color: #a78bfa;
+      letter-spacing: -0.02em;
+    }
+
+    .markdown-content p {
+      margin-bottom: 1.25rem;
+      color: #cbd5e1;
+    }
+
+    .markdown-content strong {
+      color: #e2e8f0;
+      font-weight: 600;
+    }
+
+    .markdown-content ul, .markdown-content ol {
+      margin: 1.25rem 0;
+      padding-left: 1.5rem;
+    }
+
+    .markdown-content li {
+      margin-bottom: 0.75rem;
+      color: #cbd5e1;
+    }
+
+    .markdown-content li::marker {
+      color: #7c3aed;
+    }
+
+    .markdown-content hr {
+      border: none;
+      border-top: 1px solid #1e1e2e;
+      margin: 3rem 0;
+    }
+
+    .markdown-content blockquote {
+      border-left: 3px solid #7c3aed;
+      background: rgba(124, 58, 237, 0.05);
+      padding: 1.25rem 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 0 12px 12px 0;
+    }
+
+    .markdown-content blockquote p {
+      margin-bottom: 0;
+      color: #a78bfa;
+    }
+
+    /* Back Button */
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 0.875rem;
+      margin-bottom: 2rem;
+      transition: color 0.2s;
+    }
+
+    .back-button:hover {
+      color: #e2e8f0;
+    }
+
+    /* Table */
+    .markdown-content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-size: 0.95rem;
+    }
+
+    .markdown-content th {
+      background: rgba(124, 58, 237, 0.15);
+      color: #a78bfa;
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid rgba(124, 58, 237, 0.2);
+    }
+
+    .markdown-content td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #1e1e2e;
+      color: #cbd5e1;
+    }
+
+    .markdown-content tr:hover td {
+      background: rgba(124, 58, 237, 0.03);
+    }
+
+    /* Code Block */
+    .markdown-content pre {
+      background: #13131a;
+      border: 1px solid #1e1e2e;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      overflow-x: auto;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: #94a3b8;
+    }
+
+    .markdown-content code {
+      background: rgba(124, 58, 237, 0.1);
+      border: 1px solid rgba(124, 58, 237, 0.2);
+      color: #e2e8f0;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.9em;
+      font-family: 'Consolas', 'Monaco', monospace;
+    }
+
+    .markdown-content pre code {
+      background: none;
+      border: none;
+      padding: 0;
+      font-size: 0.875rem;
+      color: #94a3b8;
+    }
+
+    /* TOC */
+    .toc {
+      background: #13131a;
+      border: 1px solid #1e1e2e;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .toc-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #e2e8f0;
+    }
+
+    .toc a {
+      color: #a78bfa;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .toc a:hover {
+      color: #c4b5fd;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container { padding: 2rem 1.25rem 4rem; }
+      .article-meta { flex-wrap: wrap; gap: 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">
+      <div class="logo-icon">📚</div>
+      <span class="logo-text"><span>학습 노트</span> - AX팀 운영일지</span>
+    </div>
+    <nav>
+      <a href="../study-notes.html">← 학습 노트 목록</a>
+      <a href="../index.html">홈</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <a href="../study-notes.html" class="back-button">← 학습 노트 목록으로</a>
+
+    <article>
+      <div class="article-header">
+        <div class="article-badge">🔌 Week 3 · API</div>
+        <h1 class="article-title">API 완벽 가이드: 식당 웨이터로 이해하는 API</h1>
+        <div class="article-meta">
+          <span>📅 2026년 4월 15일</span>
+          <span>⏱️ 12분 소요</span>
+          <span>🎯 초급자 대상</span>
+        </div>
+      </div>
+
+      <div class="markdown-content">
+
+        <!-- 목차 -->
+        <div class="toc">
+          <div class="toc-title">📋 목차</div>
+          <ul>
+            <li><a href="#what-is-api">API란 무엇인가?</a></li>
+            <li><a href="#restaurant">식당 비유로 이해하기</a></li>
+            <li><a href="#daily-api">일상 속 API</a></li>
+            <li><a href="#how-it-works">API 작동 원리</a></li>
+            <li><a href="#why-important">API가 중요한 이유</a></li>
+            <li><a href="#rest-api">REST API 기초</a></li>
+            <li><a href="#glossary">핵심 용어 정리</a></li>
+            <li><a href="#scenario">실전 시나리오: 배달 앱의 비밀</a></li>
+            <li><a href="#summary">요약</a></li>
+          </ul>
+        </div>
+
+        <hr>
+
+        <!-- 1. API란 무엇인가? -->
+        <h2 id="what-is-api">API란 무엇인가?</h2>
+
+        <p><strong>API</strong>는 <strong>Application Programming Interface</strong>의 약자입니다. 한국어로 풀면 <strong>"프로그램과 프로그램이 대화하는 방법"</strong>이에요!</p>
+
+        <p>이 어려운 영어 단어를 하나씩 쉽게 풀어볼까요?</p>
+        <ul>
+          <li><strong>Application(애플리케이션)</strong> = 프로그램, 앱 (카카오톡, 네이버 같은 것)</li>
+          <li><strong>Programming(프로그래밍)</strong> = 컴퓨터에게 일을 시키는 것</li>
+          <li><strong>Interface(인터페이스)</strong> = 서로 연결해주는 통로</li>
+        </ul>
+
+        <p>즉, API는 <strong>프로그램과 프로그램 사이에서 정보를 주고받을 수 있게 해주는 약속된 통로</strong>예요!</p>
+
+        <blockquote>
+          <p>💡 <strong>한 줄 요약:</strong> API = 프로그램들이 서로 대화하는 방법!</p>
+        </blockquote>
+
+        <hr>
+
+        <!-- 2. 식당 비유 -->
+        <h2 id="restaurant">식당 비유로 이해하기</h2>
+
+        <h3>🍽️ 식당에서 밥을 먹는 과정을 떠올려보세요!</h3>
+
+        <p>여러분이 <strong>식당</strong>에 갔다고 상상해보세요. 식당에는 세 가지 중요한 존재가 있어요:</p>
+
+        <ul>
+          <li><strong>손님 (나)</strong> = 음식을 주문하는 사람</li>
+          <li><strong>웨이터</strong> = 주문을 받아서 주방에 전달하고, 음식을 가져다주는 사람</li>
+          <li><strong>주방 (셰프)</strong> = 실제로 음식을 만드는 곳</li>
+        </ul>
+
+        <p>여기서 <strong>웨이터가 바로 API</strong>예요!</p>
+
+        <p>손님인 우리는 <strong>주방에 직접 들어가서 요리할 필요가 없어요.</strong> 메뉴판을 보고 웨이터에게 "비빔밥 하나 주세요!"라고 말하면, 웨이터가 주방에 전달하고, 맛있는 비빔밥이 나오죠!</p>
+
+        <blockquote>
+          <p>🍳 <strong>비유 정리:</strong><br>
+          손님(앱/사용자) → 웨이터(API) → 주방(서버/시스템)<br>
+          메뉴판 = API 문서 | 주문 = 요청(Request) | 음식 = 응답(Response)</p>
+        </blockquote>
+
+        <h3>🤔 만약 웨이터(API)가 없다면?</h3>
+
+        <p>웨이터 없이 식당이 운영된다고 상상해보세요:</p>
+        <ul>
+          <li>손님이 직접 주방에 들어가야 해요 (위험하고 복잡해요!)</li>
+          <li>어떤 재료가 있는지, 어떻게 요리하는지 알아야 해요</li>
+          <li>주방이 너무 복잡해서 원하는 음식을 만들기 어려워요</li>
+          <li>다른 손님들과 부딪힐 수도 있어요</li>
+        </ul>
+
+        <p><strong>API가 있으면?</strong> 그냥 메뉴판 보고 주문만 하면 돼요! 간단하죠? 😊</p>
+
+        <hr>
+
+        <!-- 3. 일상 속 API -->
+        <h2 id="daily-api">일상 속 API</h2>
+
+        <p>우리가 매일 쓰는 앱들도 사실 API를 통해 작동하고 있어요! 몰랐죠?</p>
+
+        <h3>📱 날씨 앱</h3>
+        <p>날씨 앱이 직접 하늘을 보고 날씨를 판단하는 걸까요? 아니에요!</p>
+        <p><strong>날씨 앱</strong>(손님) → <strong>기상청 API</strong>(웨이터) → <strong>기상청 서버</strong>(주방)</p>
+        <p>기상청이 가진 날씨 데이터를 API를 통해 가져와서 예쁘게 보여주는 거예요!</p>
+
+        <h3>💬 카카오톡 로그인</h3>
+        <p>다른 앱에서 "카카오로 로그인" 버튼을 누르면:</p>
+        <p><strong>쇼핑몰 앱</strong>(손님) → <strong>카카오 로그인 API</strong>(웨이터) → <strong>카카오 서버</strong>(주방)</p>
+        <p>쇼핑몰이 직접 비밀번호를 관리하지 않아도, 카카오가 "이 사람 맞아요!"라고 알려주는 거예요.</p>
+
+        <h3>🗺️ 지도 서비스</h3>
+        <p>배달 앱에서 보이는 지도는 배달 앱이 직접 만든 게 아니에요!</p>
+        <p><strong>배달 앱</strong>(손님) → <strong>네이버/구글 지도 API</strong>(웨이터) → <strong>지도 서버</strong>(주방)</p>
+        <p>지도 전문가가 만든 지도를 API로 가져다 쓰는 거예요.</p>
+
+        <h3>💳 결제 시스템</h3>
+        <p>온라인에서 물건을 살 때 카드 결제도 API로 작동해요!</p>
+        <p><strong>쇼핑몰</strong>(손님) → <strong>결제 API</strong>(웨이터) → <strong>카드사 서버</strong>(주방)</p>
+        <p>쇼핑몰이 직접 카드 결제를 처리하지 않고, 전문 결제 회사의 API를 이용하는 거예요.</p>
+
+        <hr>
+
+        <!-- 4. API 작동 원리 -->
+        <h2 id="how-it-works">API 작동 원리</h2>
+
+        <h3>📝 식당 주문 과정 = API 통신 과정</h3>
+
+        <p>식당에서 음식을 주문하는 과정을 API와 비교해볼까요?</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>식당</th>
+              <th>API</th>
+              <th>설명</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>메뉴판을 봄</td><td>API 문서 확인</td><td>어떤 기능을 쓸 수 있는지 확인</td></tr>
+            <tr><td>주문서 작성</td><td>요청(Request) 생성</td><td>원하는 것을 정해진 양식으로 작성</td></tr>
+            <tr><td>웨이터에게 전달</td><td>API 호출</td><td>서버에 요청을 보냄</td></tr>
+            <tr><td>주방에서 조리</td><td>서버에서 처리</td><td>요청받은 작업을 수행</td></tr>
+            <tr><td>음식 서빙</td><td>응답(Response) 반환</td><td>결과를 돌려받음</td></tr>
+          </tbody>
+        </table>
+
+        <h3>🎬 HTTP 메서드 = 식당에서 하는 행동들</h3>
+
+        <p>식당에서 우리가 하는 다양한 행동들, API에서도 비슷한 "행동"이 있어요. 이걸 <strong>HTTP 메서드</strong>라고 부릅니다:</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>HTTP 메서드</th>
+              <th>식당 비유</th>
+              <th>의미</th>
+              <th>예시</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>GET</strong></td>
+              <td>"메뉴판 보여주세요"</td>
+              <td>정보 조회 (가져오기)</td>
+              <td>사용자 정보 조회</td>
+            </tr>
+            <tr>
+              <td><strong>POST</strong></td>
+              <td>"비빔밥 하나 주문할게요"</td>
+              <td>새로운 것 생성 (주문하기)</td>
+              <td>새 게시글 작성</td>
+            </tr>
+            <tr>
+              <td><strong>PUT</strong></td>
+              <td>"아, 비빔밥 말고 불고기로 변경해주세요"</td>
+              <td>기존 것 수정 (변경하기)</td>
+              <td>프로필 정보 수정</td>
+            </tr>
+            <tr>
+              <td><strong>DELETE</strong></td>
+              <td>"주문 취소할게요"</td>
+              <td>삭제 (취소하기)</td>
+              <td>게시글 삭제</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>📊 상태 코드 = 웨이터의 대답</h3>
+
+        <p>웨이터가 주문을 받으면 다양한 대답을 하죠? API도 마찬가지예요!</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>상태 코드</th>
+              <th>웨이터의 대답</th>
+              <th>의미</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>200</strong></td><td>"네, 주문 완료! 음식 나왔습니다~"</td><td>성공!</td></tr>
+            <tr><td><strong>201</strong></td><td>"새 메뉴 등록 완료했어요!"</td><td>새로 만들기 성공!</td></tr>
+            <tr><td><strong>400</strong></td><td>"죄송한데, 주문서를 잘못 쓰셨어요"</td><td>잘못된 요청</td></tr>
+            <tr><td><strong>401</strong></td><td>"손님, 회원 전용 메뉴인데 회원증 보여주세요"</td><td>인증 필요</td></tr>
+            <tr><td><strong>404</strong></td><td>"그 메뉴는 저희 식당에 없어요"</td><td>찾을 수 없음</td></tr>
+            <tr><td><strong>500</strong></td><td>"죄송합니다, 주방에서 사고가 났어요..."</td><td>서버 오류</td></tr>
+          </tbody>
+        </table>
+
+        <hr>
+
+        <!-- 5. API가 중요한 이유 -->
+        <h2 id="why-important">API가 중요한 이유</h2>
+
+        <h3>🧩 레고 블록처럼 조립할 수 있어요!</h3>
+
+        <p>API가 있으면, 모든 것을 처음부터 만들 필요가 없어요. 마치 레고 블록처럼 필요한 기능을 조립하면 되거든요!</p>
+
+        <ul>
+          <li><strong>편리함:</strong> 지도가 필요하면? 네이버 지도 API를 가져다 쓰면 끝! 직접 지도를 그릴 필요 없어요.</li>
+          <li><strong>보안:</strong> 손님이 주방에 들어가지 않듯이, API를 쓰면 서버 내부를 직접 볼 수 없어서 안전해요.</li>
+          <li><strong>표준화:</strong> 메뉴판에 정해진 양식이 있듯이, API도 정해진 규칙이 있어서 누구나 쉽게 사용할 수 있어요.</li>
+          <li><strong>확장성:</strong> 새로운 기능이 필요하면 새 API를 연결하기만 하면 돼요. 레고에 새 블록 끼우는 것처럼요!</li>
+        </ul>
+
+        <blockquote>
+          <p>🧩 <strong>비유:</strong> API는 레고 블록! 날씨 블록 + 지도 블록 + 결제 블록 = 배달 앱 완성!</p>
+        </blockquote>
+
+        <hr>
+
+        <!-- 6. REST API 기초 -->
+        <h2 id="rest-api">REST API 기초</h2>
+
+        <p>API 중에서 가장 많이 사용하는 방식이 <strong>REST API</strong>예요. REST는 식당의 <strong>"운영 규칙"</strong>과 같아요!</p>
+
+        <h3>🏠 URL = 식당 주소 + 메뉴 카테고리</h3>
+
+        <p>식당에도 주소가 있듯이, API에도 주소가 있어요. 이걸 <strong>URL(엔드포인트)</strong>이라고 해요:</p>
+
+        <pre><code>https://api.restaurant.com/menu          → 전체 메뉴 보기
+https://api.restaurant.com/menu/bibimbap  → 비빔밥 정보 보기
+https://api.restaurant.com/orders         → 주문 목록 보기
+https://api.restaurant.com/orders/123     → 123번 주문 상세 보기</code></pre>
+
+        <h3>📋 JSON = 주문서 양식</h3>
+
+        <p>식당에서 주문서를 쓰듯이, API에서는 <strong>JSON</strong>이라는 양식으로 데이터를 주고받아요. JSON은 사람도 읽을 수 있고 컴퓨터도 읽을 수 있는 양식이에요!</p>
+
+        <p><strong>식당 주문서 (사람 버전):</strong></p>
+        <pre><code>이름: 홍길동
+메뉴: 비빔밥
+수량: 2
+특별 요청: 계란 추가</code></pre>
+
+        <p><strong>API 주문서 (JSON 버전):</strong></p>
+        <pre><code>{
+  "name": "홍길동",
+  "menu": "비빔밥",
+  "quantity": 2,
+  "special_request": "계란 추가"
+}</code></pre>
+
+        <p>비슷하죠? JSON은 <strong>중괄호 { }</strong> 안에 <strong>"항목": "값"</strong> 형태로 정보를 담는 거예요!</p>
+
+        <h3>🔑 API Key = 회원증</h3>
+
+        <p>어떤 식당은 회원만 이용할 수 있죠? API도 마찬가지예요. <strong>API Key</strong>는 "나는 허가받은 사용자예요!"라고 증명하는 <strong>회원증</strong>이에요.</p>
+
+        <p>API Key가 필요한 이유:</p>
+        <ul>
+          <li>아무나 함부로 사용하지 못하게 하려고</li>
+          <li>누가 얼마나 사용했는지 추적하려고</li>
+          <li>나쁜 의도로 사용하는 사람을 막으려고</li>
+        </ul>
+
+        <hr>
+
+        <!-- 7. 핵심 용어 정리 -->
+        <h2 id="glossary">핵심 용어 정리</h2>
+
+        <table>
+          <thead>
+            <tr>
+              <th>용어</th>
+              <th>식당 비유</th>
+              <th>실제 의미</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>API</strong></td><td>웨이터</td><td>프로그램 간 소통 통로</td></tr>
+            <tr><td><strong>엔드포인트(Endpoint)</strong></td><td>식당 주소 + 메뉴 카테고리</td><td>API를 호출하는 URL 주소</td></tr>
+            <tr><td><strong>요청(Request)</strong></td><td>주문서</td><td>서버에 보내는 메시지</td></tr>
+            <tr><td><strong>응답(Response)</strong></td><td>나온 음식</td><td>서버가 돌려주는 결과</td></tr>
+            <tr><td><strong>HTTP 메서드</strong></td><td>식당에서 하는 행동</td><td>GET(조회), POST(생성), PUT(수정), DELETE(삭제)</td></tr>
+            <tr><td><strong>JSON</strong></td><td>주문서 양식</td><td>데이터를 주고받는 표준 형식</td></tr>
+            <tr><td><strong>API Key</strong></td><td>회원증</td><td>인증을 위한 고유 키</td></tr>
+            <tr><td><strong>상태 코드</strong></td><td>웨이터의 대답</td><td>요청 결과를 알려주는 숫자 (200, 404 등)</td></tr>
+            <tr><td><strong>REST API</strong></td><td>식당 운영 규칙</td><td>API를 설계하는 가장 일반적인 방식</td></tr>
+            <tr><td><strong>서버(Server)</strong></td><td>주방</td><td>요청을 처리하는 컴퓨터</td></tr>
+            <tr><td><strong>클라이언트(Client)</strong></td><td>손님</td><td>요청을 보내는 쪽 (앱, 웹브라우저)</td></tr>
+          </tbody>
+        </table>
+
+        <hr>
+
+        <!-- 8. 실전 시나리오 -->
+        <h2 id="scenario">실전 시나리오: 배달 앱의 비밀</h2>
+
+        <p>우리가 매일 쓰는 <strong>배달 앱</strong>이 어떻게 작동하는지 API 관점에서 살펴볼까요?</p>
+
+        <h3>📱 1단계: 앱을 열고 로그인</h3>
+        <p>배달 앱을 열고 "카카오로 로그인" 버튼을 누르면:</p>
+        <pre><code>배달 앱 → [카카오 로그인 API 호출] → 카카오 서버
+         ← [사용자 정보 응답] ←
+
+"이 사람은 홍길동이고, 인증된 사용자입니다!" (상태 코드: 200)</code></pre>
+
+        <h3>🏪 2단계: 주변 식당 찾기</h3>
+        <p>내 위치 주변 식당을 보여주려면:</p>
+        <pre><code>배달 앱 → [지도 API 호출: 내 위치 전송] → 지도 서버
+         ← [주변 식당 목록 응답] ←
+
+배달 앱 → [식당 API 호출: GET /restaurants?location=강남] → 배달 서버
+         ← [식당 목록 + 메뉴 + 리뷰 응답] ←</code></pre>
+
+        <h3>🍕 3단계: 음식 주문</h3>
+        <p>"피자 주문하기" 버튼을 누르면:</p>
+        <pre><code>배달 앱 → [주문 API 호출: POST /orders] → 배달 서버
+         보내는 데이터 (JSON):
+         {
+           "restaurant_id": 42,
+           "menu": "페페로니 피자",
+           "quantity": 1,
+           "address": "서울시 강남구..."
+         }
+         ← [주문 완료 응답: 주문번호 #9876] ← (상태 코드: 201)</code></pre>
+
+        <h3>💳 4단계: 결제</h3>
+        <pre><code>배달 앱 → [결제 API 호출] → 카드사 서버
+         ← [결제 성공 응답] ← (상태 코드: 200)</code></pre>
+
+        <h3>🛵 5단계: 배달 추적</h3>
+        <pre><code>배달 앱 → [배달 API 호출: GET /delivery/9876/status] → 배달 서버
+         ← [현재 상태: "배달원이 픽업했습니다"] ←
+
+(30초마다 반복 호출해서 실시간 추적!)</code></pre>
+
+        <blockquote>
+          <p>🚀 <strong>놀랍지 않나요?</strong> 배달 앱 하나에 로그인 API, 지도 API, 주문 API, 결제 API, 배달 추적 API... 최소 5개 이상의 API가 함께 일하고 있어요!</p>
+        </blockquote>
+
+        <hr>
+
+        <!-- 9. API 흐름 한눈에 보기 -->
+        <h2>API 흐름 한눈에 보기</h2>
+
+        <pre>
+    👤 클라이언트 (손님)              🔌 API (웨이터)              🖥️ 서버 (주방)
+    ┌──────────────┐              ┌──────────────┐              ┌──────────────┐
+    │              │   요청       │              │   전달       │              │
+    │  앱/웹사이트  │ ──────────→ │  API 통로    │ ──────────→ │  데이터 처리  │
+    │              │             │              │              │              │
+    │              │   응답       │              │   결과       │              │
+    │              │ ←────────── │              │ ←────────── │              │
+    └──────────────┘              └──────────────┘              └──────────────┘
+
+    📋 메뉴판 = API 문서     📝 주문서 = 요청(Request)     🍽️ 음식 = 응답(Response)
+        </pre>
+
+        <hr>
+
+        <!-- 10. 요약 -->
+        <h2 id="summary">요약</h2>
+
+        <p><strong>API</strong>는 프로그램과 프로그램이 서로 대화하는 방법이에요!</p>
+
+        <ul>
+          <li><strong>API = 식당의 웨이터</strong> → 손님(앱)과 주방(서버) 사이에서 주문을 전달</li>
+          <li><strong>요청(Request)</strong> → "비빔밥 주세요!" (GET, POST, PUT, DELETE)</li>
+          <li><strong>응답(Response)</strong> → "네, 여기 비빔밥이요!" (200, 404, 500)</li>
+          <li><strong>JSON</strong> → 주문서 양식 (정보를 담는 규칙)</li>
+          <li><strong>API Key</strong> → 회원증 (인증)</li>
+        </ul>
+
+        <p>우리가 매일 쓰는 앱 뒤에는 수많은 API가 열심히 일하고 있어요. 날씨를 알려주고, 지도를 보여주고, 결제를 처리하고, 메시지를 보내주는 게 전부 API 덕분이에요!</p>
+
+        <blockquote>
+          <p>🎯 <strong>핵심 요약:</strong> API = 웨이터! 손님(앱)이 주방(서버)에 직접 갈 필요 없이, 웨이터(API)에게 주문(요청)하면 음식(응답)이 나온다!</p>
+        </blockquote>
+
+        <p style="text-align: center; color: #7c3aed; font-size: 1.1rem; margin-top: 3rem;">
+          <strong>🎉 수고하셨습니다!</strong><br>
+          이제 API가 무엇인지 알게 되었어요!
+        </p>
+
+      </div>
+    </article>
+  </div>
+
+</body>
+</html>

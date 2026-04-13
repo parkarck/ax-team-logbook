@@ -33,4 +33,12 @@
     <priority>0.7</priority>
   </url>
 
+  <!-- Week 3: API -->
+  <url>
+    <loc>https://ax-team-logbook.vercel.app/week-3/api-guide</loc>
+    <lastmod>2026-04-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
 </urlset>
