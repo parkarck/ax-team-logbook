@@ -29,7 +29,16 @@ const WEEKS_DATA = [
       { title: "API 교육 자료", htmlPath: "week-3/api-guide.html" }
     ]
   },
-  { week: 4, date: "2026-04-22", contents: [] },
+  {
+    week: 4,
+    date: "2026-04-22",
+    title: "NotebookLM으로 나만의 AI 스터디 메이트 만들기",
+    description: "'내가 준 자료만 읽은 전담 과외 선생님' 비유로 이해하는 NotebookLM의 원리·사용법·활용 사례",
+    tags: ["NotebookLM", "RAG", "LLM"],
+    contents: [
+      { title: "NotebookLM 교육 자료", htmlPath: "week-4/notebooklm-guide.html" }
+    ]
+  },
   { week: 5, date: "2026-04-29", contents: [] },
   { week: 6, date: "2026-05-06", contents: [] },
   { week: 7, date: "2026-05-13", contents: [] },

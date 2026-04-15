@@ -41,4 +41,12 @@
     <priority>0.7</priority>
   </url>
 
+  <!-- Week 4: NotebookLM -->
+  <url>
+    <loc>https://ax-team-logbook.vercel.app/week-4/notebooklm-guide</loc>
+    <lastmod>2026-04-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
 </urlset>
