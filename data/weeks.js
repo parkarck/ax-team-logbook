@@ -39,7 +39,16 @@ const WEEKS_DATA = [
       { title: "NotebookLM 교육 자료", htmlPath: "week-4/notebooklm-guide.html" }
     ]
   },
-  { week: 5, date: "2026-04-29", contents: [] },
+  {
+    week: 5,
+    date: "2026-04-29",
+    title: "Make.com & n8n으로 만드는 노코드 AI 자동화",
+    description: "'디지털 공장 조립 라인' 비유로 이해하는 워크플로우 자동화 — Week 1~4에서 배운 AI 도구들을 레고처럼 연결하기",
+    tags: ["Make.com", "n8n", "Automation", "No-code"],
+    contents: [
+      { title: "워크플로우 자동화 교육 자료", htmlPath: "week-5/automation-guide.html" }
+    ]
+  },
   { week: 6, date: "2026-05-06", contents: [] },
   { week: 7, date: "2026-05-13", contents: [] },
   { week: 8, date: "2026-05-20", contents: [] },

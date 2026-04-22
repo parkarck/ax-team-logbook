@@ -1,0 +1,1665 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Make.com & n8n 완벽 가이드 (디지털 공장 조립 라인) - AX팀 학습 노트</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif;
+      background: #0f0f11;
+      color: #e2e8f0;
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    header {
+      border-bottom: 1px solid #1e1e2e;
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      background: rgba(15, 15, 17, 0.95);
+      backdrop-filter: blur(12px);
+      z-index: 100;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #7c3aed, #2563eb);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .logo-text {
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .logo-text span {
+      color: #7c3aed;
+    }
+
+    nav a {
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 0.875rem;
+      margin-left: 1.5rem;
+      transition: color 0.2s;
+    }
+
+    nav a:hover { color: #e2e8f0; }
+
+    /* Main Content */
+    .container {
+      max-width: 840px;
+      margin: 0 auto;
+      padding: 3rem 2rem 6rem;
+    }
+
+    /* Article Header */
+    .article-header {
+      margin-bottom: 3rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid #1e1e2e;
+    }
+
+    .article-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(124, 58, 237, 0.15);
+      border: 1px solid rgba(124, 58, 237, 0.3);
+      color: #a78bfa;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.35rem 0.9rem;
+      border-radius: 100px;
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .article-title {
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #e2e8f0 0%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .article-meta {
+      display: flex;
+      gap: 1.5rem;
+      font-size: 0.875rem;
+      color: #64748b;
+    }
+
+    /* Markdown Content */
+    .markdown-content {
+      font-size: 1.05rem;
+    }
+
+    .markdown-content h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin: 2rem 0 1rem;
+      padding-left: 1rem;
+      border-left: 3px solid #7c3aed;
+      letter-spacing: -0.02em;
+    }
+
+    .markdown-content h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin: 1.75rem 0 0.75rem;
+      color: #a78bfa;
+      letter-spacing: -0.02em;
+    }
+
+    .markdown-content h4 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin: 1.25rem 0 0.5rem;
+      color: #cbd5e1;
+      letter-spacing: -0.01em;
+    }
+
+    .markdown-content p {
+      margin-bottom: 1.25rem;
+      color: #cbd5e1;
+    }
+
+    .markdown-content strong {
+      color: #e2e8f0;
+      font-weight: 600;
+    }
+
+    .markdown-content ul, .markdown-content ol {
+      margin: 1.25rem 0;
+      padding-left: 1.5rem;
+    }
+
+    .markdown-content li {
+      margin-bottom: 0.75rem;
+      color: #cbd5e1;
+    }
+
+    .markdown-content li::marker {
+      color: #7c3aed;
+    }
+
+    .markdown-content hr {
+      border: none;
+      border-top: 1px solid #1e1e2e;
+      margin: 3rem 0;
+    }
+
+    .markdown-content blockquote {
+      border-left: 3px solid #7c3aed;
+      background: rgba(124, 58, 237, 0.05);
+      padding: 1.25rem 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 0 12px 12px 0;
+    }
+
+    .markdown-content blockquote p {
+      margin-bottom: 0;
+      color: #a78bfa;
+    }
+
+    /* Back Button */
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 0.875rem;
+      margin-bottom: 2rem;
+      transition: color 0.2s;
+    }
+
+    .back-button:hover {
+      color: #e2e8f0;
+    }
+
+    /* Table */
+    .markdown-content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-size: 0.95rem;
+    }
+
+    .markdown-content th {
+      background: rgba(124, 58, 237, 0.15);
+      color: #a78bfa;
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid rgba(124, 58, 237, 0.2);
+    }
+
+    .markdown-content td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #1e1e2e;
+      color: #cbd5e1;
+      vertical-align: top;
+    }
+
+    .markdown-content tr:hover td {
+      background: rgba(124, 58, 237, 0.03);
+    }
+
+    /* Code Block */
+    .markdown-content pre {
+      background: #13131a;
+      border: 1px solid #1e1e2e;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      overflow-x: auto;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: #94a3b8;
+    }
+
+    .markdown-content code {
+      background: rgba(124, 58, 237, 0.1);
+      border: 1px solid rgba(124, 58, 237, 0.2);
+      color: #e2e8f0;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.9em;
+      font-family: 'Consolas', 'Monaco', monospace;
+    }
+
+    .markdown-content pre code {
+      background: none;
+      border: none;
+      padding: 0;
+      font-size: 0.875rem;
+      color: #94a3b8;
+    }
+
+    /* TOC */
+    .toc {
+      background: #13131a;
+      border: 1px solid #1e1e2e;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .toc-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #e2e8f0;
+    }
+
+    .toc a {
+      color: #a78bfa;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .toc a:hover {
+      color: #c4b5fd;
+    }
+
+    /* Case Card */
+    .case-card {
+      background: #13131a;
+      border: 1px solid #1e1e2e;
+      border-radius: 12px;
+      padding: 1.5rem 1.75rem;
+      margin: 1.5rem 0 2rem;
+    }
+
+    .case-card h3 {
+      margin-top: 0;
+    }
+
+    .case-card .case-meta {
+      font-size: 0.85rem;
+      color: #64748b;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Week Link Tag */
+    .week-link {
+      display: inline-block;
+      background: rgba(37, 99, 235, 0.12);
+      border: 1px solid rgba(37, 99, 235, 0.3);
+      color: #60a5fa;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.15rem 0.55rem;
+      border-radius: 6px;
+      margin-right: 0.4rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container { padding: 2rem 1.25rem 4rem; }
+      .article-meta { flex-wrap: wrap; gap: 0.75rem; }
+      .case-card { padding: 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">
+      <div class="logo-icon">📚</div>
+      <span class="logo-text"><span>학습 노트</span> - AX팀 운영일지</span>
+    </div>
+    <nav>
+      <a href="../study-notes.html">← 학습 노트 목록</a>
+      <a href="../index.html">홈</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <a href="../study-notes.html" class="back-button">← 학습 노트 목록으로</a>
+
+    <article>
+      <div class="article-header">
+        <div class="article-badge">🏭 Week 5 · Automation</div>
+        <h1 class="article-title">Make.com &amp; n8n 완벽 가이드: 디지털 공장 조립 라인을 만드는 법</h1>
+        <div class="article-meta">
+          <span>📅 2026년 4월 29일</span>
+          <span>⏱️ 35-45분 소요</span>
+          <span>🎯 초급 ~ 중급</span>
+        </div>
+      </div>
+
+      <div class="markdown-content">
+
+        <!-- 목차 -->
+        <div class="toc">
+          <div class="toc-title">📋 목차</div>
+          <ul>
+            <li><a href="#analogy">💡 쉬운 비유: 디지털 공장 조립 라인</a></li>
+            <li><a href="#recap">🔄 지난 주차 복습 &amp; 오늘의 연결고리</a></li>
+            <li><a href="#what-is-make">🛠️ Make.com이란?</a></li>
+            <li><a href="#what-is-n8n">🛠️ n8n이란?</a></li>
+            <li><a href="#how-it-works">⚙️ 작동 원리: Trigger → Module → Action</a></li>
+            <li><a href="#why-easy">🎯 왜 편한가? 7가지 이유</a></li>
+            <li><a href="#practice-cases">📋 실전 Practice Cases 5가지</a></li>
+            <li><a href="#hands-on">🚀 Hands-on: 5분 만에 첫 시나리오 만들기</a></li>
+            <li><a href="#make-vs-n8n">⚖️ Make vs n8n 비교표</a></li>
+            <li><a href="#decision-guide">🤔 언제 Make, 언제 n8n? 의사결정 가이드</a></li>
+            <li><a href="#security">🛡️ 보안·데이터·비용 체크리스트</a></li>
+            <li><a href="#faq">❓ 자주 하는 질문 (FAQ)</a></li>
+            <li><a href="#summary">🎓 핵심 요약</a></li>
+            <li><a href="#next-week">📚 다음 주 예고</a></li>
+          </ul>
+        </div>
+
+        <hr>
+
+        <!-- 1. 쉬운 비유 -->
+        <h2 id="analogy">💡 쉬운 비유: 디지털 공장 조립 라인</h2>
+
+        <p>오늘의 주인공은 <strong>Make.com</strong>과 <strong>n8n</strong>이에요. 이름은 낯설 수 있지만, 쉽게 말하면 <strong>"여러 앱을 이어서 자동으로 일하게 만드는 도구"</strong>예요.</p>
+
+        <h3>🏭 자동차 공장을 한 번 떠올려볼까요?</h3>
+
+        <p>자동차 공장에 가 본 적 있으세요? 없어도 괜찮아요. 머리속으로 상상해봐요.</p>
+
+        <ul>
+          <li><strong>출발점(원재료 투입구)</strong>: 철판, 유리, 나사 같은 재료가 들어와요.</li>
+          <li><strong>컨베이어 벨트(Conveyor Belt)</strong>: 재료가 벨트 위에서 천천히 이동해요.</li>
+          <li><strong>각 Station(작업대)</strong>: 벨트를 따라가면서 용접 → 도색 → 조립 → 검수가 한 단계씩 일어나요. <strong>각 station은 한 가지 작업만</strong> 정말 잘해요.</li>
+          <li><strong>도착점(완성품)</strong>: 벨트 끝에서 반짝이는 자동차가 쏟아져 나와요.</li>
+        </ul>
+
+        <p>공장이 무서운 건 <strong>사람이 따로 움직이지 않아도 자동으로 굴러간다</strong>는 점이에요. 한 번 라인을 잘 깔아두면 밤낮없이 24시간 돌아가죠.</p>
+
+        <h3>🤖 Make.com과 n8n은 "디지털 버전의 공장"</h3>
+
+        <p>공장이 자동차를 만드는 것처럼, <strong>Make.com과 n8n은 데이터를 흘려서 자동으로 일하게 만드는 "디지털 공장"</strong>이에요. 다만 재료가 철판이 아니라 <strong>이메일, 주문 정보, 채팅 메시지, 설문 응답</strong> 같은 데이터죠.</p>
+
+        <pre>
+  📥 원재료 (Trigger)      🔧 Station (Module)      📤 완성품 (Output)
+  ┌─────────────┐          ┌─────────────┐          ┌─────────────┐
+  │  Gmail 새   │  ─────→  │  ChatGPT가  │  ─────→  │  Slack으로   │
+  │  메시지 도착 │   흐름    │  내용 요약   │   흐름    │  요약 전송   │
+  └─────────────┘          └─────────────┘          └─────────────┘
+        ↑                         ↑                         ↑
+   트리거(시작 조건)         모듈(한 가지 작업)         액션(결과 내보내기)
+
+       🏭 한 번 만들어 두면 밤낮없이 자동으로 돌아가는 "나만의 디지털 공장"
+        </pre>
+
+        <blockquote>
+          <p>🏭 <strong>비유 한 줄 정리:</strong><br>
+          Make/n8n = <strong>디지털 공장 조립 라인</strong>. 데이터를 넣으면(트리거) 각 station(모듈)을 거쳐(변환·AI·알림·저장) 완성된 결과(출력)가 자동으로 나옵니다. 나는 라인을 <strong>한 번만 깔면 끝</strong>, 공장은 24시간 알아서 돌아요.</p>
+        </blockquote>
+
+        <hr>
+
+        <!-- 2. 지난 주차 복습 & 연결 -->
+        <h2 id="recap">🔄 지난 주차 복습 &amp; 오늘의 연결고리</h2>
+
+        <p>오늘 배울 내용은 지난 4주간 배운 내용들을 <strong>하나로 엮는 "지휘자" 이야기</strong>예요. 그래서 지난 주차를 한 번 빠르게 복습하고 가야 해요. 각 주차가 오늘의 공장에서 어떤 역할을 하는지 함께 그려볼게요.</p>
+
+        <h3>📖 Weeks 1~4를 한 장으로 요약</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>주차</th>
+              <th>주제</th>
+              <th>비유</th>
+              <th>핵심 아이디어</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Week 1</strong></td>
+              <td>AI Agent</td>
+              <td>🤖 똑똑한 비서 / 자율적 로봇 직원</td>
+              <td>AI가 <strong>스스로 판단</strong>해서 목표를 달성</td>
+            </tr>
+            <tr>
+              <td><strong>Week 2</strong></td>
+              <td>RAG</td>
+              <td>📚 도서관 사서</td>
+              <td>답하기 전에 <strong>자료를 먼저 검색</strong>해서 환각 줄이기</td>
+            </tr>
+            <tr>
+              <td><strong>Week 3</strong></td>
+              <td>API</td>
+              <td>🍽️ 식당 웨이터</td>
+              <td>앱과 앱이 서로 <strong>주문(요청)과 요리(응답)</strong>를 주고받는 약속</td>
+            </tr>
+            <tr>
+              <td><strong>Week 4</strong></td>
+              <td>NotebookLM</td>
+              <td>👨‍🏫 내 자료만 읽은 전담 과외 선생님</td>
+              <td>RAG + LLM + API가 조립된 <strong>완제품 도구</strong></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>👨‍🍳 Week 5 = 모든 직원들을 지휘하는 "주방장/공장장"</h3>
+
+        <p>지난 4주간 배운 직원들을 다시 떠올려볼게요.</p>
+        <ul>
+          <li><strong>Week 1 비서(Agent)</strong>는 똑똑하지만, 혼자서 해결할 수 없는 일도 많아요.</li>
+          <li><strong>Week 2 사서(RAG)</strong>는 자료 검색을 잘하지만, 결과를 어디다 쓸지는 누군가 정해줘야 해요.</li>
+          <li><strong>Week 3 웨이터(API)</strong>는 주문을 잘 전달하지만, <strong>"누구에게 어떤 순서로 주문할지"</strong>는 시키는 사람이 필요해요.</li>
+          <li><strong>Week 4 과외 선생님(NotebookLM)</strong>은 자료만 주면 자동으로 분석하지만, 자료를 모으는 건 사람 몫이었죠.</li>
+        </ul>
+
+        <p>이 모든 직원들을 <strong>한 명의 주방장(또는 공장장)</strong>이 지휘한다고 생각해봐요. "야, 사서! 가서 이 자료 찾아와. 웨이터! 그거 받아서 요리사한테 전달해. 다 되면 비서한테 알려서 손님에게 보내!" 이 주방장이 바로 <strong>Make.com 또는 n8n</strong>이에요.</p>
+
+        <pre>
+                 👨‍🍳 Week 5: 주방장 (Make.com / n8n)
+                           │
+        ┌──────────┬───────┴───────┬──────────┐
+        ↓          ↓               ↓          ↓
+   🤖 Agent     📚 RAG          🍽️ API      👨‍🏫 NotebookLM
+   (자율 판단)  (자료 검색)      (앱 연결)   (자료 분석)
+    Week 1      Week 2           Week 3      Week 4
+
+    "Week 5는 새로운 도구를 배우는 게 아니라,
+     지난 주차들을 연결해서 실제로 돌아가게 만드는 방법을 배워요."
+        </pre>
+
+        <blockquote>
+          <p>🎯 <strong>오늘의 관점 전환:</strong> Make/n8n은 <strong>새로운 기술이 아니에요</strong>. 지난 4주간 배운 도구들을 <strong>연결하고 자동화</strong>하는 방법이에요. 그래서 Week 1~4를 이해한 여러분이라면, 오늘이 가장 재미있는 주차가 될 거예요!</p>
+        </blockquote>
+
+        <hr>
+
+        <!-- 3. Make.com 이란? -->
+        <h2 id="what-is-make">🛠️ Make.com이란?</h2>
+
+        <p><strong>Make.com</strong>(구 Integromat)은 <strong>"마우스로 끌어다 놓기만 하면 자동화가 완성되는 클라우드 도구"</strong>예요. 2012년 체코에서 시작해서 지금은 전 세계 수백만 명이 사용하는 대표 자동화 플랫폼이 됐어요.</p>
+
+        <h3>✨ Make.com의 특징 한눈에 보기</h3>
+
+        <ul>
+          <li><strong>클라우드 기반(SaaS)</strong>: 설치 필요 없음. 웹 브라우저만 있으면 OK.</li>
+          <li><strong>시각적 GUI</strong>: 동그란 모듈들을 선으로 이어서 시나리오를 만들어요. 한 번만 봐도 직관적!</li>
+          <li><strong>1,700+ 기성 커넥터</strong>: Gmail, Slack, Notion, Google Sheets, ChatGPT, Airtable, Typeform 등 거의 모든 주요 앱을 클릭 몇 번으로 연결.</li>
+          <li><strong>비개발자 친화</strong>: 코드를 몰라도 쓸 수 있게 설계됐어요. "이 데이터를 어디로 보낼까?"만 알면 충분.</li>
+          <li><strong>강력한 데이터 변환</strong>: JSON 매핑, Aggregator(집계), Iterator(반복), Router(분기) 같은 고급 기능도 마우스로 설정.</li>
+        </ul>
+
+        <h3>💰 Make.com 요금제 (2026년 기준)</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>플랜</th>
+              <th>월 요금</th>
+              <th>작업 횟수(Operation)</th>
+              <th>용도</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Free</strong></td><td>$0</td><td>월 1,000회</td><td>체험·취미용</td></tr>
+            <tr><td><strong>Core</strong></td><td>$9~</td><td>월 10,000회</td><td>개인 사이드 프로젝트</td></tr>
+            <tr><td><strong>Pro</strong></td><td>$16~</td><td>월 10,000회 + 고급 기능</td><td>소규모 비즈니스</td></tr>
+            <tr><td><strong>Teams</strong></td><td>$29~</td><td>월 10,000회 + 팀 협업</td><td>팀 단위 운영</td></tr>
+            <tr><td><strong>Enterprise</strong></td><td>문의</td><td>맞춤</td><td>대기업·보안 요건</td></tr>
+          </tbody>
+        </table>
+
+        <p>여기서 <strong>"Operation(작업)"</strong>은 모듈이 한 번 실행되는 단위예요. 예를 들어 Gmail에서 1개 메시지 읽고 + ChatGPT가 1번 요약하고 + Slack으로 1번 전송 = <strong>3 operations</strong>로 계산돼요.</p>
+
+        <h3>🎨 Make.com UI가 특별한 이유</h3>
+
+        <p>Make.com이 경쟁 도구(Zapier 등)와 가장 크게 구별되는 점은 <strong>시나리오가 "원형 모듈 + 연결선"으로 표현된다</strong>는 것이에요. Zapier처럼 일직선 리스트가 아니라, <strong>실제 공장 도면처럼 시각적으로 흐름이 보여요</strong>.</p>
+
+        <ul>
+          <li><strong>원형 모듈</strong>: 각 앱이 동그라미 아이콘으로 표시돼요 (Gmail = 빨간 원, Slack = 보라 원, ChatGPT = 녹색 원…)</li>
+          <li><strong>연결선</strong>: 모듈 사이를 잇는 선이 "데이터의 흐름"이에요. 실제 JSON 데이터가 선을 따라 흐르는 걸 시각적으로 디버깅할 수 있어요.</li>
+          <li><strong>실행 버블</strong>: "Run once"를 누르면 각 모듈 위에 작은 숫자 버블이 떠요 — "이 모듈은 방금 3번 실행됐고, 각각 몇 바이트의 데이터가 흘렀는지" 클릭 한 번으로 확인.</li>
+          <li><strong>Router(라우터)</strong>: 조건 분기가 시각적으로 "갈림길"로 표현돼서, 비개발자도 "이 데이터는 어디로 가나?"를 한눈에 이해해요.</li>
+        </ul>
+
+        <h3>🧰 Make.com의 대표 기능 5가지</h3>
+
+        <ul>
+          <li><strong>1. Templates (템플릿 갤러리)</strong>: 7,000+ 공개 템플릿 — "Gmail에서 Slack으로 요약 전송" 같은 흔한 시나리오를 클릭 한 번에 복제해 시작 가능.</li>
+          <li><strong>2. Data Stores (데이터 저장소)</strong>: 시나리오 내부에서 쓸 수 있는 미니 DB. 중복 제거·상태 추적·카운터에 사용.</li>
+          <li><strong>3. Webhooks &amp; Mailhooks</strong>: 외부 서비스가 Make를 즉시 깨울 수 있는 고유 URL·이메일 주소를 발급.</li>
+          <li><strong>4. HTTP Module</strong>: 커넥터가 없는 서비스라도 REST API만 있으면 연결 가능 (<span class="week-link">Week 3 API</span> 지식 활용 포인트!).</li>
+          <li><strong>5. Make AI Assistant</strong>: 2026년 기준 베타 — 자연어로 "Gmail 첨부를 Drive에 저장하는 시나리오 만들어줘"라고 말하면 초안을 자동 생성.</li>
+        </ul>
+
+        <blockquote>
+          <p>💡 <strong>Make.com 한 줄 요약:</strong> <strong>"노코드 끝판왕"</strong>. 마우스만 움직일 줄 알면 한 시간 만에 첫 자동화를 만들 수 있어요. 비개발자·소규모 팀에 특히 강합니다.</p>
+        </blockquote>
+
+        <hr>
+
+        <!-- 4. n8n 이란? -->
+        <h2 id="what-is-n8n">🛠️ n8n이란?</h2>
+
+        <p><strong>n8n</strong>(이름 발음: "n-eight-n" = nodemation)은 <strong>"오픈소스 + 자체호스팅이 가능한 자동화 도구"</strong>예요. 2019년 독일 베를린에서 시작됐고, 개발자 커뮤니티가 폭발적으로 밀어주는 도구예요.</p>
+
+        <h3>✨ n8n의 특징 한눈에 보기</h3>
+
+        <ul>
+          <li><strong>오픈소스</strong>: 소스코드가 공개되어 있어 누구나 보고 수정할 수 있어요.</li>
+          <li><strong>자체호스팅 가능</strong>: 우리 회사 서버(또는 내 컴퓨터)에 설치해서 돌릴 수 있어요. <strong>데이터가 외부로 나가지 않아요.</strong></li>
+          <li><strong>400+ 공식 노드 + 2,000+ 커뮤니티 노드</strong>: 기성 연결 + 직접 만든 커스텀 연결까지 풍부.</li>
+          <li><strong>개발자 친화</strong>: 각 노드 안에서 JavaScript 코드로 세밀한 제어 가능. 복잡한 로직도 표현할 수 있어요.</li>
+          <li><strong>AI/LLM 통합에 특히 강점</strong>: LangChain 스타일의 AI 에이전트 노드, 벡터 DB, 임베딩 노드가 기본 내장 — Week 2 RAG를 그대로 구현 가능.</li>
+          <li><strong>가격이 매력적</strong>: 자체호스팅은 <strong>무료</strong>, 클라우드는 실행 횟수가 아니라 <strong>워크플로우 단위</strong>로 과금.</li>
+        </ul>
+
+        <h3>🏠 자체호스팅이란 뭐예요?</h3>
+
+        <p><strong>자체호스팅(Self-hosting)</strong>은 "내 서버에 직접 설치해서 돌리는 것"이에요. Make.com은 무조건 "Make 회사의 서버"에서만 돌아가지만, n8n은 <strong>내 노트북, 사내 서버, 클라우드(AWS·GCP)</strong> 어디든 설치할 수 있어요.</p>
+
+        <p>이게 왜 중요할까요?</p>
+        <ul>
+          <li><strong>데이터 주권</strong>: 민감한 고객 정보, 영업 비밀, 연구 원자료가 <strong>외부 회사 서버를 거치지 않아요</strong>.</li>
+          <li><strong>비용 예측 가능</strong>: 서버 비용만 내면 실행 횟수가 아무리 많아도 추가 요금 없어요.</li>
+          <li><strong>커스터마이징 자유도</strong>: 소스코드를 수정해서 회사 환경에 맞게 고칠 수 있어요.</li>
+        </ul>
+
+        <h3>💰 n8n 요금제 (2026년 기준)</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>플랜</th>
+              <th>월 요금</th>
+              <th>특징</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Community (자체호스팅)</strong></td><td>무료</td><td>무제한 실행. 서버 비용만 부담.</td></tr>
+            <tr><td><strong>Starter (클라우드)</strong></td><td>$20~</td><td>5개 활성 워크플로우, 무제한 실행</td></tr>
+            <tr><td><strong>Pro (클라우드)</strong></td><td>$50~</td><td>15개 활성 워크플로우 + 고급 기능</td></tr>
+            <tr><td><strong>Enterprise</strong></td><td>문의</td><td>SSO·감사로그·SLA</td></tr>
+          </tbody>
+        </table>
+
+        <h3>🛠️ n8n 설치는 얼마나 쉬운가요?</h3>
+
+        <p>자체호스팅이라고 하면 "어렵겠다"는 인상을 줄 수 있지만, n8n은 설치 난이도가 놀랍도록 낮아요. 대표적인 3가지 방식:</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>설치 방식</th>
+              <th>난이도</th>
+              <th>적합한 상황</th>
+              <th>한 줄 명령어</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>npm (Node.js)</strong></td>
+              <td>⭐</td>
+              <td>노트북에서 빠른 체험</td>
+              <td><code>npx n8n</code></td>
+            </tr>
+            <tr>
+              <td><strong>Docker</strong></td>
+              <td>⭐⭐</td>
+              <td>회사 서버·클라우드</td>
+              <td><code>docker run n8nio/n8n</code></td>
+            </tr>
+            <tr>
+              <td><strong>n8n Cloud</strong></td>
+              <td>무설치</td>
+              <td>인프라 관리 싫을 때</td>
+              <td>웹에서 가입만</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>npm 방식은 <strong>"명령어 한 줄"</strong>로 n8n이 내 컴퓨터에서 바로 돌기 시작해요. <code>http://localhost:5678</code>로 접속하면 Make와 비슷한 캔버스 UI가 뜹니다. 체험용으로는 5분이면 충분.</p>
+
+        <h3>🧠 n8n이 AI/LLM에 특별히 강한 이유</h3>
+
+        <p>2026년 현재, n8n은 <strong>"AI 워크플로우 도구"</strong>로 포지셔닝하고 있어요. 단순 커넥터를 넘어 <strong>LangChain 스타일의 AI 에이전트 노드</strong>가 공식 내장이에요.</p>
+
+        <ul>
+          <li><strong>AI Agent 노드</strong>: "이 도구들을 쓸 수 있는 에이전트 만들어줘"를 시각적으로 설계. <span class="week-link">Week 1 Agent</span>의 실전 구현체.</li>
+          <li><strong>Vector Store 노드</strong>: Pinecone, Weaviate, Qdrant, pgvector 등 주요 벡터 DB를 기본 지원. <span class="week-link">Week 2 RAG</span>의 "검색" 단계를 클릭으로 구성.</li>
+          <li><strong>Embeddings 노드</strong>: OpenAI·Cohere·HuggingFace 임베딩을 호출해 벡터화. RAG 파이프라인의 "자료 → 벡터" 변환을 자동화.</li>
+          <li><strong>Chain 노드</strong>: 여러 LLM 호출을 체이닝해서 복잡한 프롬프트 플로우를 구성 (요약 → 분류 → 재작성 같은 다단계).</li>
+          <li><strong>Memory 노드</strong>: 대화 기록을 유지하는 챗봇 구축. Week 4 NotebookLM 같은 도구를 <strong>우리 회사 데이터로 직접</strong> 만들 수 있어요.</li>
+        </ul>
+
+        <blockquote>
+          <p>💡 <strong>n8n 한 줄 요약:</strong> <strong>"개발자가 사랑하는 오픈소스 자동화"</strong>. 민감 데이터를 다루거나 복잡한 AI 파이프라인을 만들 때 최고의 선택이에요. 특히 Week 2에서 배운 RAG 파이프라인을 노코드로 구축할 때 빛을 발해요.</p>
+        </blockquote>
+
+        <hr>
+
+        <!-- 5. 작동 원리 -->
+        <h2 id="how-it-works">⚙️ 작동 원리: Trigger → Module → Action</h2>
+
+        <p>Make와 n8n은 이름도, UI도 조금씩 다르지만 <strong>작동 방식은 거의 똑같아요</strong>. 핵심 3요소만 기억하면 됩니다.</p>
+
+        <h3>🔑 자동화의 3요소</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>요소</th>
+              <th>공장 비유</th>
+              <th>설명</th>
+              <th>예시</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>1. Trigger<br>(트리거)</strong></td>
+              <td>원재료 투입</td>
+              <td>자동화가 <strong>시작되는 조건</strong></td>
+              <td>새 이메일 수신 / 매일 오전 9시 / 폼 제출</td>
+            </tr>
+            <tr>
+              <td><strong>2. Module / Node<br>(모듈·노드)</strong></td>
+              <td>각 작업 station</td>
+              <td>데이터를 <strong>읽고, 변환하고, 가공</strong>하는 단계</td>
+              <td>ChatGPT 호출 / JSON 파싱 / 조건 분기</td>
+            </tr>
+            <tr>
+              <td><strong>3. Action<br>(액션·출력)</strong></td>
+              <td>완성품 출고</td>
+              <td>마지막 <strong>결과를 어딘가에 저장/전송</strong></td>
+              <td>Slack 알림 / Sheets 기록 / 이메일 전송</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>🎬 전체 흐름도 (공장 조립 라인)</h3>
+
+        <pre>
+  ┌──────────────────────────────────────────────────────────────┐
+  │                                                              │
+  │   📥 TRIGGER          🔧 MODULES (여러 개 연결 가능)    📤 OUTPUT   │
+  │   ┌────────┐          ┌────────┬────────┬────────┐       ┌──────┐  │
+  │   │ 새 폼  │ ───────→ │ 파싱    │ → AI   │ → 변환 │ ────→ │ DB   │  │
+  │   │ 제출    │   흐름   │ (정제) │  요약   │  (정렬) │  흐름  │ 저장  │  │
+  │   └────────┘          └────────┴────────┴────────┘       └──────┘  │
+  │        ▲                    ▲      ▲      ▲                 │
+  │        │                    │      │      │                 │
+  │   "언제 시작?"         "어떤 작업?" (순서대로 station)    "어디로?"  │
+  │                                                              │
+  └──────────────────────────────────────────────────────────────┘
+
+          🏭 이 전체를 Make/n8n에서는 "Scenario" (Make)
+             또는 "Workflow" (n8n)라고 불러요.
+        </pre>
+
+        <h3>🔄 트리거는 3가지 방식으로 동작해요</h3>
+
+        <h4>방식 1: Polling (주기적 확인)</h4>
+        <p>Make/n8n이 <strong>주기적으로 "새로운 것 있어?"라고 물어봐요</strong>. 예: 15분마다 Gmail에 새 메일이 있는지 확인.</p>
+        <ul>
+          <li>👍 장점: 거의 모든 서비스에 적용 가능, 설정 간단</li>
+          <li>👎 단점: "15분 지연"이 생길 수 있음 (실시간은 아님)</li>
+        </ul>
+
+        <h4>방식 2: Instant Webhook (즉시 알림)</h4>
+        <p>반대로 <strong>서비스가 먼저 Make/n8n에게 "이런 일 일어났어!"라고 알려줘요</strong>. 예: Typeform에 응답이 제출되면 즉시 n8n을 깨움.</p>
+        <ul>
+          <li>👍 장점: 실시간 반응 (지연 거의 없음), 불필요한 호출 제로</li>
+          <li>👎 단점: 서비스가 webhook을 지원해야 함</li>
+        </ul>
+
+        <h4>방식 3: Schedule (일정 기반)</h4>
+        <p>정해진 시간에 자동 실행. 예: 매일 아침 9시 / 매주 월요일 / 매월 1일.</p>
+        <ul>
+          <li>👍 장점: 리포트·정기 백업·뉴스레터에 딱 맞음</li>
+          <li>👎 단점: 이벤트 기반이 아니라서 "그때그때 반응"은 아님</li>
+        </ul>
+
+        <h3>🔗 모듈 사이를 흐르는 "데이터"의 정체</h3>
+
+        <p>공장 조립 라인에서 컨베이어 벨트에 올라가 있는 건 <strong>데이터</strong>예요. 대부분의 경우 <strong>JSON</strong>이라는 형식이죠. Week 3에서 배운 API 응답이 바로 JSON이었어요!</p>
+
+        <pre>
+// Gmail 모듈이 다음 station으로 넘기는 데이터 예시
+{
+  "from": "customer@example.com",
+  "subject": "배송 관련 문의",
+  "body": "주문번호 #12345 배송이 언제 오나요?",
+  "receivedAt": "2026-04-29T10:15:00Z"
+}
+
+// 다음 station(ChatGPT)이 이 데이터를 받아서 요약하고
+// 또 다음 station(Slack)이 요약된 텍스트를 받아 전송
+        </pre>
+
+        <p>Make/n8n의 진짜 강점은 <strong>"이 JSON의 body 필드만 다음 station으로 넘기기"</strong>, <strong>"이 필드 값이 '긴급'이면 다른 길로 보내기"</strong> 같은 세밀한 데이터 조작을 <strong>마우스 드래그만으로</strong> 할 수 있다는 점이에요.</p>
+
+        <h3>🧩 자주 쓰는 고급 모듈 3가지</h3>
+
+        <ul>
+          <li><strong>🔀 Router (라우터·분기)</strong>: 조건에 따라 다른 길로 보내기. "감성이 부정이면 → 매니저에게 알림 / 긍정이면 → 기록만".</li>
+          <li><strong>🔁 Iterator (이터레이터·반복)</strong>: 배열 데이터를 하나씩 꺼내 처리. "응답 50개를 한 건씩 AI에 넘기기".</li>
+          <li><strong>🧮 Aggregator (집계)</strong>: 여러 건을 모아 한 덩어리로 묶기. "오늘의 응답 42건을 요약 하나로 합치기".</li>
+        </ul>
+
+        <h3>📦 데이터 매핑 예시: 실제로 어떻게 연결되나?</h3>
+
+        <p>말보다 예시가 빨라요. 설문 응답 하나가 들어와서 Slack 알림이 나가기까지, 데이터가 어떻게 변환되는지 따라가 볼게요.</p>
+
+        <h4>Station 0 — Typeform Trigger 출력</h4>
+        <pre>
+{
+  "response_id": "abc123",
+  "submitted_at": "2026-04-29T14:20:00Z",
+  "answers": {
+    "Q1_satisfaction": 3,
+    "Q2_comment": "배송이 너무 늦어요. 3일 예상했는데 일주일 걸렸음."
+  },
+  "respondent_email": "customer@example.com"
+}
+        </pre>
+
+        <h4>Station 1 — PII 마스킹 모듈 (정규식 Replace) 출력</h4>
+        <pre>
+{
+  "response_id": "abc123",
+  "answers": {
+    "Q1_satisfaction": 3,
+    "Q2_comment": "배송이 너무 늦어요. 3일 예상했는데 일주일 걸렸음."
+  },
+  "respondent_email": "[MASKED_EMAIL]"
+}
+        </pre>
+
+        <h4>Station 2 — LLM 분석 모듈 출력 (JSON 응답)</h4>
+        <pre>
+{
+  "topic": "배송",
+  "sentiment": "negative",
+  "intensity": 4,
+  "keywords": ["배송 지연", "예상 초과", "불만"],
+  "anomaly_flag": false
+}
+        </pre>
+
+        <h4>Station 3 — Slack 메시지 모듈 입력 (매핑 결과)</h4>
+        <pre>
+🔴 *부정 응답 감지* (강도 4/5)
+*토픽:* 배송
+*키워드:* 배송 지연, 예상 초과, 불만
+*원문:* "배송이 너무 늦어요. 3일 예상했는데 일주일 걸렸음."
+*응답 ID:* abc123
+        </pre>
+
+        <p>Make/n8n에서는 이 <strong>"필드 → 다음 모듈의 어떤 자리에"</strong>를 <strong>마우스 드래그</strong>로 지정해요. 코드라면 <code>response.answers.Q2_comment</code>를 일일이 적어야 하지만, 여기서는 파란 풍선으로 표시된 필드를 원하는 칸에 던지면 끝.</p>
+
+        <blockquote>
+          <p>⚙️ <strong>작동 원리 한 줄:</strong> <code>Trigger (언제 시작?)</code> → <code>Modules (여러 station)</code> → <code>Action (어디로?)</code>. 이 3요소가 공장 조립 라인의 전부예요. 복잡해 보여도 모든 자동화는 이 패턴의 조합일 뿐!</p>
+        </blockquote>
+
+        <hr>
+
+        <!-- 6. 왜 편한가? -->
+        <h2 id="why-easy">🎯 왜 편한가? 7가지 이유</h2>
+
+        <p>"그냥 코드로 짜면 안 돼요?" 하는 질문이 나올 수 있어요. 가능은 하죠. 그런데 Make/n8n이 <strong>왜 엄청나게 편한지</strong> 구체적인 7가지 이유를 짚어볼게요.</p>
+
+        <h3>1️⃣ 코드 한 줄 없이 API를 연결</h3>
+        <p>Week 3에서 배운 API 연결을 코드로 하려면 <strong>HTTP 요청, 인증, 에러 핸들링</strong>을 전부 직접 짜야 해요. Make/n8n은 모듈을 클릭하면 인증 창이 뜨고, 로그인만 하면 끝. <strong>"API 문서 읽는 시간 90% 절약"</strong>이에요.</p>
+
+        <h3>2️⃣ 1,700+ 기성 커넥터 / 2,000+ 커뮤니티 노드</h3>
+        <p>웬만한 SaaS 서비스는 이미 커넥터로 준비돼 있어요. Gmail, Slack, Notion, Google Sheets, Airtable, Typeform, Shopify, HubSpot, Salesforce, ChatGPT, Claude, Gemini, Stripe, AWS, Discord, Telegram, WhatsApp… <strong>"없는 게 오히려 드물어요."</strong></p>
+
+        <h3>3️⃣ 실패 시 자동 재시도 / 에러 핸들링 내장</h3>
+        <p>네트워크가 순간적으로 끊기거나 API가 일시적으로 먹통이 되어도, Make/n8n이 <strong>자동으로 재시도</strong>해줘요. 코드로 짰다면 이걸 일일이 구현해야 하는데, 여기선 <strong>체크박스 하나로 해결</strong>이에요.</p>
+
+        <h3>4️⃣ 스케줄링 / 웹훅 / 이벤트 트리거 모두 기본 제공</h3>
+        <p>"매일 아침 9시에 실행" 같은 크론잡을 직접 만들 필요 없어요. <strong>드롭다운에서 시간만 고르면 끝</strong>. 웹훅 URL도 클릭 한 번이면 자동 생성돼요.</p>
+
+        <h3>5️⃣ 한 번 만들면 재사용 (템플릿 / 복제)</h3>
+        <p>만들어둔 시나리오는 <strong>복사·수정·팀 공유</strong>가 자유로워요. "고객사 A를 위한 자동화"를 고객사 B용으로 5분이면 복제 가능. Make/n8n 모두 <strong>공식 템플릿 갤러리</strong>가 있어서 남이 만든 자동화를 가져와 쓸 수도 있어요.</p>
+
+        <h3>6️⃣ 비용이 투명해요</h3>
+        <p>"이 자동화가 한 달에 얼마나 쓸까?"를 <strong>실행 전에 예측 가능</strong>해요. Make는 Operation 단위(예: 하루 100건 처리 × 3 모듈 = 월 9,000 operations), n8n은 워크플로우 단위라서 예산 세우기 쉬워요. 코드 서버를 직접 돌리면 서버비·로그비·유지보수 공수까지 들어가는데, 여기선 <strong>숫자 하나로 끝</strong>.</p>
+
+        <h3>7️⃣ 로그·감사 추적이 자동</h3>
+        <p>매 실행마다 <strong>"언제, 어떤 데이터가, 어떤 경로로 흘렀는지"</strong>가 전부 기록돼요. 실패한 실행도 그대로 남아서 디버깅이 쉬워요. 리서치 회사라면 <strong>"응답 데이터가 어떻게 처리됐는지"</strong>를 감사할 수 있어야 하는데, Make/n8n은 이 기능이 기본 내장이에요.</p>
+
+        <blockquote>
+          <p>🎯 <strong>요약:</strong> Make/n8n은 "개발자가 며칠 걸려 만들 자동화"를 <strong>비개발자가 한 시간 만에</strong> 만들 수 있게 해주는 도구예요. "시간 절약"이 아니라 <strong>"시간 압축"</strong>이라는 표현이 더 어울려요.</p>
+        </blockquote>
+
+        <hr>
+
+        <!-- 7. Practice Cases -->
+        <h2 id="practice-cases">📋 실전 Practice Cases 5가지</h2>
+
+        <p>이제 진짜 재미있는 부분이에요. 실제로 이런 걸 만들 수 있어요. 각 케이스마다 <strong>Trigger → Modules → Output</strong> 흐름도와, 지난 주차 내용이 어디서 사용되는지 표시했어요.</p>
+
+        <!-- Case 1 -->
+        <div class="case-card">
+          <h3>📨 Case 1: Gmail 첨부파일 → Google Drive 자동 정리</h3>
+          <div class="case-meta">난이도: ⭐ (가장 쉬움) · 제작 시간: 5~10분 · 추천 도구: Make.com</div>
+
+          <p><strong>문제 상황:</strong> 거래처·고객이 계약서, 이미지, PDF를 이메일로 보내요. 매번 다운받아서 Drive에 넣고, 폴더 정리하고, 파일명 바꾸는 데 하루 10~20분이 사라져요.</p>
+
+          <p><strong>자동화 흐름:</strong></p>
+
+          <pre>
+  📥 TRIGGER               🔧 MODULES                          📤 OUTPUT
+  ┌──────────┐          ┌─────────┬──────────┬─────────┐      ┌────────┐
+  │ 새 Gmail │  ─────→  │ 첨부파일 │ 발신자별  │ 파일명   │ ───→ │  Drive │
+  │ 수신     │          │ 추출     │ 폴더 결정 │ 정규화   │      │  저장  │
+  └──────────┘          └─────────┴──────────┴─────────┘      └────────┘
+          </pre>
+
+          <p><strong>각 단계가 하는 일:</strong></p>
+          <ol>
+            <li><strong>Trigger:</strong> Gmail "Watch emails" 모듈 — 특정 라벨(예: "거래처") 메일이 오면 발동</li>
+            <li><strong>Module 1:</strong> "Download attachment" — 첨부파일만 뽑아냄</li>
+            <li><strong>Module 2:</strong> Router — 발신자 도메인에 따라 폴더 결정 (@samsung.com → /거래처/삼성/)</li>
+            <li><strong>Module 3:</strong> Text — 파일명을 <code>2026-04-29_[발신자]_[원본명].pdf</code> 형식으로 변환</li>
+            <li><strong>Output:</strong> Google Drive "Upload a file" — 해당 폴더에 저장</li>
+          </ol>
+
+          <p><strong><span class="week-link">Week 3 연계</span> API가 뒤에서 일해요</strong>: Gmail API로 메일을 읽고, Drive API로 파일을 업로드해요. "웨이터 두 명"을 주방장(Make)이 지휘하는 모습.</p>
+
+          <p><strong>👉 효과:</strong> 하루 10~20분 × 250일 ≈ <strong>연간 60~80시간 절약</strong>. 게다가 파일 분실 위험이 거의 0.</p>
+        </div>
+
+        <!-- Case 2 -->
+        <div class="case-card">
+          <h3>📰 Case 2: RSS 피드 → ChatGPT 요약 → Slack 알림 (LLM 연계)</h3>
+          <div class="case-meta">난이도: ⭐⭐ · 제작 시간: 15~20분 · 추천 도구: Make.com or n8n</div>
+
+          <p><strong>문제 상황:</strong> 업계 동향을 매일 체크해야 하는데, TechCrunch·HackerNews·회사 블로그를 일일이 돌아보기 너무 비효율. 제목만 봐서는 중요한지 알기 어려움.</p>
+
+          <p><strong>자동화 흐름:</strong></p>
+
+          <pre>
+  📥 TRIGGER               🔧 MODULES                             📤 OUTPUT
+  ┌───────────┐        ┌──────────┬──────────┬──────────┐        ┌────────┐
+  │ RSS 피드  │ ─────→ │ 중복 제거 │ ChatGPT  │ 마크다운 │  ────→ │  Slack │
+  │ 새 글 감지 │        │ (URL 기준)│ 3줄 요약 │ 포맷 변환 │        │  채널  │
+  └───────────┘        └──────────┴──────────┴──────────┘        └────────┘
+                                          ▲
+                                          │
+                              (Week 4에서 배운 LLM이 여기서 일함!)
+          </pre>
+
+          <p><strong>각 단계가 하는 일:</strong></p>
+          <ol>
+            <li><strong>Trigger:</strong> "Watch RSS feed" — 30분마다 여러 RSS를 체크</li>
+            <li><strong>Module 1:</strong> Data Store — 이미 처리한 URL을 저장해서 중복 방지</li>
+            <li><strong>Module 2:</strong> <strong>ChatGPT/Claude 모듈</strong> — 프롬프트: <em>"이 기사를 한국어로 3줄 요약하고, 우리 회사에 주는 시사점 1줄을 덧붙여줘"</em></li>
+            <li><strong>Module 3:</strong> Text Parser — Slack 마크다운 형식으로 변환 (<code>*굵게*</code>, <code>&gt; 인용</code>)</li>
+            <li><strong>Output:</strong> Slack "Create a message" — #업계동향 채널에 전송</li>
+          </ol>
+
+          <p><strong><span class="week-link">Week 4 연계</span> LLM이 요약을 담당</strong>: Week 4에서 배운 LLM이 단순 "요약 기계"로 들어갑니다. NotebookLM이 "자료 속 정답 찾기"라면, 여기선 <strong>"자료를 한 줄로 압축하기"</strong>에 쓰여요.</p>
+
+          <p><strong>👉 효과:</strong> 기사 50개를 30초 만에 확인. "제목만 봐서 모르겠던 기사"도 시사점까지 한 줄로 보이니 정보 접근 속도가 <strong>20배</strong>.</p>
+        </div>
+
+        <!-- Case 3 -->
+        <div class="case-card">
+          <h3>💬 Case 3: 고객 문의 → 내부 문서 RAG 검색 → 자동 답변 초안 (RAG 연계)</h3>
+          <div class="case-meta">난이도: ⭐⭐⭐ · 제작 시간: 1~2시간 · 추천 도구: n8n (RAG 노드 강점)</div>
+
+          <p><strong>문제 상황:</strong> CS 팀이 하루에 비슷한 문의를 수십 건씩 받아요. 대부분 사내 FAQ 문서나 매뉴얼에 답이 있는데, 매번 사람이 찾아서 답변을 복사·붙여넣기.</p>
+
+          <p><strong>자동화 흐름:</strong></p>
+
+          <pre>
+  📥 TRIGGER                 🔧 MODULES                                  📤 OUTPUT
+  ┌──────────┐           ┌────────┬──────────┬──────────┬────────┐     ┌────────┐
+  │ 문의 폼  │ ────────→ │ 질문   │ 벡터 검색│ 상위 3개 │ LLM이  │ ──→ │ Zendesk│
+  │ 제출     │           │ 전처리 │ (RAG)    │ 문서 추출│ 답변 작성│     │ 초안 생성│
+  └──────────┘           └────────┴──────────┴──────────┴────────┘     └────────┘
+                                          ▲            ▲
+                                          │            │
+                          (Week 2 도서관 사서!)   (Week 4 LLM!)
+          </pre>
+
+          <p><strong>각 단계가 하는 일:</strong></p>
+          <ol>
+            <li><strong>Trigger:</strong> Zendesk/Freshdesk "New ticket" 웹훅</li>
+            <li><strong>Module 1:</strong> 질문 텍스트 전처리 (불필요한 인사말 제거, 핵심 키워드 추출)</li>
+            <li><strong>Module 2:</strong> <strong>Vector Store 검색</strong> (n8n의 Pinecone/Weaviate/Qdrant 노드) — 사내 FAQ·매뉴얼을 미리 임베딩해 둔 DB에서 유사 문서 top-3 검색</li>
+            <li><strong>Module 3:</strong> LLM 호출 — <em>"다음 3개 문서를 근거로 고객 문의에 답변해줘. 근거가 없으면 '담당자 확인 필요'로 답변."</em></li>
+            <li><strong>Output:</strong> Zendesk "Add internal note" — 답변 초안을 CS 담당자에게 제안으로 전달 (자동 전송 X, 사람 검수 후 전송)</li>
+          </ol>
+
+          <p><strong><span class="week-link">Week 2 연계</span> 이게 바로 RAG예요!</strong>: Week 2의 "도서관 사서" 3단계가 그대로 재현돼요 — 검색(Retrieval) → 증강(Augmented) → 생성(Generation). NotebookLM이 한 일을 이번엔 <strong>우리 회사 데이터로 직접 구축</strong>하는 것.</p>
+
+          <p><strong><span class="week-link">Week 4 연계</span> NotebookLM과 뭐가 달라요?</strong>: NotebookLM은 "완제품"이라 내 문서를 Google 서버에 올려야 해요. 이 케이스는 <strong>데이터를 외부로 내보내지 않고</strong> 사내에 RAG를 구축 — 금융·의료·법률 회사에 필수.</p>
+
+          <p><strong>👉 효과:</strong> CS 응답 시간 평균 <strong>40% 단축</strong>, 신입 상담원 온보딩 기간 <strong>50% 단축</strong>.</p>
+        </div>
+
+        <!-- Case 4 -->
+        <div class="case-card">
+          <h3>📊 Case 4: 경쟁사 뉴스 크롤링 → AI 분석 → Notion 리포트 (Agent-like 자동화)</h3>
+          <div class="case-meta">난이도: ⭐⭐⭐ · 제작 시간: 1~2시간 · 추천 도구: Make.com or n8n</div>
+
+          <p><strong>문제 상황:</strong> 경쟁사 3~5곳의 신규 소식·가격 변동·제품 업데이트를 매일 체크해야 하는데, 웹사이트가 전부 다르고, 뉴스가 쏟아져서 따라가기 벅차요.</p>
+
+          <p><strong>자동화 흐름:</strong></p>
+
+          <pre>
+  📥 TRIGGER           🔧 MODULES                                       📤 OUTPUT
+  ┌──────────┐     ┌────────┬──────────┬──────────┬──────────┐         ┌────────┐
+  │ 매일 AM  │ ──→ │ 5개 사  │ HTML   │ LLM 분류  │ 중요도    │  ─────→ │ Notion │
+  │ 08:00    │     │ 크롤링  │ 파싱   │ (가격·신규│ 스코어링  │         │ DB 저장│
+  └──────────┘     │ (RSS·  │ (텍스트 │ 제품·인사 │ + 요약   │         │ + 매니저│
+                   │ Scraper)│ 추출)  │ 발표·기타)│          │         │ 이메일 │
+                   └────────┴──────────┴──────────┴──────────┘         └────────┘
+                                      ▲
+                                      │
+                      (Week 1 Agent-like 자율 분류·판단)
+          </pre>
+
+          <p><strong>각 단계가 하는 일:</strong></p>
+          <ol>
+            <li><strong>Trigger:</strong> Schedule — 매일 오전 8시</li>
+            <li><strong>Module 1:</strong> 경쟁사별 RSS + HTTP Request 모듈로 뉴스룸 페이지 크롤링</li>
+            <li><strong>Module 2:</strong> HTML Parser — <code>&lt;article&gt;</code> 태그에서 본문·발행일·링크 추출</li>
+            <li><strong>Module 3:</strong> LLM 호출 — <em>"이 기사를 [가격 변동 / 신규 제품 / 인사 발표 / 기타] 중 하나로 분류하고, 중요도를 1~10으로 매겨줘. 그리고 우리 회사 관점에서 시사점 한 줄을 써줘."</em></li>
+            <li><strong>Module 4:</strong> Router — 중요도 7점 이상은 즉시 매니저 이메일, 전체는 Notion DB로 저장</li>
+            <li><strong>Output:</strong> Notion "Create database item" + Gmail "Send email"</li>
+          </ol>
+
+          <p><strong><span class="week-link">Week 1 연계</span> Agent-like 동작</strong>: 이 파이프라인은 <strong>"사람이 하던 자율적 판단(분류·중요도 평가)"을 AI가 대신</strong>해요. 완전한 Agent는 아니지만, Week 1에서 배운 Agent의 핵심(스스로 판단)을 모방한 설계입니다.</p>
+
+          <p><strong>👉 효과:</strong> 매일 1시간 걸리던 리서치를 10분 이내로 단축. 중요한 변화를 놓칠 확률 ↓.</p>
+        </div>
+
+        <!-- Case 5 - 마케팅 리서치 회사용 -->
+        <div class="case-card">
+          <h3>🔬 Case 5: 설문·VOC 자동 분석 파이프라인 (마케팅 리서치 회사용)</h3>
+          <div class="case-meta">난이도: ⭐⭐⭐⭐ · 제작 시간: 반나절 · 추천 도구: n8n (민감 데이터·자체호스팅 필요)</div>
+
+          <p><strong>문제 상황:</strong> 마케팅 리서치 회사에서 <strong>설문·VOC(Voice of Customer)</strong>를 다루는 풍경을 떠올려봐요.</p>
+          <ul>
+            <li>Typeform으로 돌린 소비자 설문 응답 500건이 쌓였어요. 객관식은 대시보드에 자동 반영되는데, <strong>자유 서술(정성 응답)</strong>은 사람이 하나씩 읽고 카테고리를 붙이고 감성을 분류해요.</li>
+            <li>리서처 한 명이 정성 코딩에 <strong>2~3일</strong>을 쓰고, PM은 "중요한 불만 없어?"라고 물어봐도 <strong>리포트가 나올 때까지 모름</strong>.</li>
+            <li>긴급 이슈(제품 결함 암시, 이탈 신호)도 주간 리포트 때서야 발견 → <strong>대응이 일주일 늦음</strong>.</li>
+          </ul>
+
+          <p>이 고통을 자동화로 해결해볼게요.</p>
+
+          <p><strong>자동화 흐름:</strong></p>
+
+          <pre>
+  📥 TRIGGER                 🔧 MODULES                                              📤 OUTPUT
+  ┌───────────┐         ┌────────┬─────────┬──────────┬──────────┬─────────┐    ┌──────────┐
+  │ Typeform  │ ──────→ │ PII    │ LLM     │ 라우터   │ 스코어    │ 누적    │ ─→ │ ① Looker │
+  │ 응답 제출 │ Webhook │ 마스킹 │ 분석     │ (이상/  │ (긍정/    │ 저장    │    │ 대시보드 │
+  │ (즉시)    │         │ (개인정보│ (토픽·  │ 정상)    │ 중립/부정)│         │    │ 자동 갱신│
+  └───────────┘         │ 제거)   │ 감성·키워드)       │          │         │    ├──────────┤
+                         └────────┴─────────┴──────────┴──────────┴─────────┘    │ ② PM에게 │
+                                      ▲            ▲                              │ 일일 요약│
+                                      │            │                              │ Slack DM │
+                                 (Week 4 LLM!) (Week 1 Agent-like)                │          │
+                                                                                  │ ③ 부정   │
+                                                                                  │ 알람      │
+                                                                                  │ (실시간) │
+                                                                                  └──────────┘
+          </pre>
+
+          <p><strong>각 단계가 하는 일:</strong></p>
+          <ol>
+            <li><strong>Trigger:</strong> Typeform / Google Forms / SurveyMonkey <strong>Instant Webhook</strong> — 응답 제출 즉시 발동 (Polling 아님)</li>
+            <li><strong>Module 1 — 전처리 &amp; PII 마스킹:</strong>
+              <ul>
+                <li>응답 JSON에서 정성 필드(자유 서술)만 추출</li>
+                <li>정규식으로 이메일·전화번호·주민등록번호 패턴을 <code>[MASKED_EMAIL]</code> 등으로 치환</li>
+                <li><strong>LLM에 원본 PII를 보내지 않는 것이 핵심</strong> — 리서치 업계 윤리·개인정보 보호 요건</li>
+              </ul>
+            </li>
+            <li><strong>Module 2 — LLM 분석 (ChatGPT / Claude):</strong> 구조화된 JSON 응답을 강제해요.
+              <ul>
+                <li><strong>토픽 분류</strong>: 제품 / 가격 / CS / 브랜드 인식 / 기타 (사전 정의 카테고리)</li>
+                <li><strong>감성 점수</strong>: 긍정 / 중립 / 부정 + 강도(1~5)</li>
+                <li><strong>핵심 키워드 3개</strong> 추출</li>
+                <li><strong>이상 신호 플래그</strong>: 제품 결함 암시 / 이탈 의사 / 법적 이슈 암시 → true/false</li>
+              </ul>
+            </li>
+            <li><strong>Module 3 — 라우터 분기:</strong>
+              <ul>
+                <li><strong>이상 신호 = true</strong> → 즉시 Slack #voc-alerts 채널에 알림 (리포트 대기 없음)</li>
+                <li><strong>정상</strong> → 누적 저장으로 흐름</li>
+              </ul>
+            </li>
+            <li><strong>Output A — 대시보드 자동 갱신:</strong>
+              <ul>
+                <li>Google Sheets에 한 줄 append (응답 텍스트 원본 + 토픽 + 감성 + 키워드)</li>
+                <li>Looker Studio가 Sheets를 데이터소스로 연결 → <strong>실시간 대시보드</strong> 자동 반영</li>
+              </ul>
+            </li>
+            <li><strong>Output B — PM 일일 요약 DM:</strong>
+              <ul>
+                <li>매일 오후 5시 Schedule 트리거로 <strong>당일 응답 집계</strong></li>
+                <li>LLM으로 "오늘의 하이라이트 5개" 자연어 요약 생성</li>
+                <li>예시: <em>"오늘 응답 42건 중 부정 7건 (17%). 주요 이슈: '배송 지연' 4회, '앱 로그인 오류' 3회 언급. 어제 대비 부정 비율 +5%p 상승."</em></li>
+                <li>PM Slack DM으로 전송</li>
+              </ul>
+            </li>
+          </ol>
+
+          <p><strong>지난 주차 연계 총정리:</strong></p>
+          <ul>
+            <li><strong><span class="week-link">Week 3 API</span></strong>: Typeform · OpenAI · Sheets · Slack 네 개의 "웨이터(API)"를 한 명의 "주방장(n8n)"이 지휘. Week 3 비유가 정확히 들어맞아요.</li>
+            <li><strong><span class="week-link">Week 4 LLM</span></strong>: 사람이 일일이 정성 코딩하던 작업을 LLM이 자동화. Week 4에서 배운 LLM의 언어 이해 능력이 핵심 엔진.</li>
+            <li><strong><span class="week-link">Week 2 RAG</span></strong>: 누적된 응답 DB가 그대로 과거 VOC 지식베이스가 됨. "이전 분기 설문에서 비슷한 불만이 있었나?"를 벡터 검색으로 조회하는 확장 기능 추가 가능.</li>
+            <li><strong><span class="week-link">Week 1 Agent</span></strong>: 자율적으로 감지·분류·알림까지 판단. "이건 긴급인가?"를 AI가 결정한다는 점에서 Agent-like 동작.</li>
+          </ul>
+
+          <h4>🎯 마케팅 리서치 관점의 가치</h4>
+          <table>
+            <thead>
+              <tr>
+                <th>지표</th>
+                <th>Before (수작업)</th>
+                <th>After (자동화)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>정성 응답 1건당 분석 시간</td><td>약 3~5분</td><td>약 10초</td></tr>
+              <tr><td>대시보드 갱신 주기</td><td>주 1회 (수작업 리포트)</td><td>분 단위 (실시간)</td></tr>
+              <tr><td>부정 시그널 인지 속도</td><td>리포트 대기(3~7일)</td><td>실시간 Slack 알림</td></tr>
+              <tr><td>리서처 정성 코딩 공수</td><td>주당 10~15시간</td><td>주당 1~2시간 (검수만)</td></tr>
+              <tr><td>PII 관리</td><td>엑셀 파일에 원본 노출</td><td>LLM 이전에 마스킹 강제</td></tr>
+            </tbody>
+          </table>
+
+          <blockquote>
+            <p>🔬 <strong>왜 이 케이스에 n8n을 추천?</strong> 설문 응답은 <strong>개인정보·민감 의견</strong>이 섞여 있어 외부 서버에 통째로 올리기 부담스러워요. n8n을 <strong>자체호스팅</strong>하면 데이터가 사내에서만 흘러요. LLM 호출도 회사 정책에 맞는 엔드포인트(예: Azure OpenAI의 EU 리전, Bedrock)로 라우팅 가능.</p>
+          </blockquote>
+
+          <h4>🎁 보너스: 인터뷰 녹취록 자동 분석 확장</h4>
+          <p>이 파이프라인을 복제해서 <strong>인터뷰 녹취(FGI·IDI)</strong>에도 적용 가능해요:</p>
+          <ul>
+            <li>녹음 파일 업로드 → <strong>OpenAI Whisper</strong> 모듈로 한국어 전사</li>
+            <li>전사본을 위 Case 5 파이프라인으로 통과시키면 자동 토픽·감성·인사이트 추출</li>
+            <li>리서처의 녹취록 코딩 시간 <strong>주당 20시간 → 3시간</strong>으로 단축</li>
+          </ul>
+        </div>
+
+        <blockquote>
+          <p>📋 <strong>5개 케이스의 공통점:</strong> 모두 <strong>Trigger → Modules → Output</strong> 3요소의 조합이에요. 복잡해 보이는 것도 결국 이 패턴. 차이는 <strong>"어떤 Module을 몇 개 어떤 순서로"</strong> 쌓느냐일 뿐이에요.</p>
+        </blockquote>
+
+        <h3>🧠 5개 케이스에서 뽑아낸 공통 패턴</h3>
+
+        <p>케이스들을 자세히 보면 <strong>6가지 반복되는 설계 패턴</strong>이 있어요. 이걸 익혀두면 "처음 보는 문제도 설계가 보이는 감각"이 생깁니다.</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>패턴</th>
+              <th>설명</th>
+              <th>등장 케이스</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Fetch → Process → Store</strong></td>
+              <td>외부에서 가져와서 → 가공해서 → 쌓기</td>
+              <td>Case 1, 2, 4</td>
+            </tr>
+            <tr>
+              <td><strong>Listen → Classify → Route</strong></td>
+              <td>이벤트를 받고 → 분류해서 → 다른 길로 분기</td>
+              <td>Case 3, 5</td>
+            </tr>
+            <tr>
+              <td><strong>Schedule → Aggregate → Report</strong></td>
+              <td>정기적으로 → 모아서 → 리포트 생성</td>
+              <td>Case 4, Case 5의 Output B</td>
+            </tr>
+            <tr>
+              <td><strong>Dedupe (중복 제거)</strong></td>
+              <td>처리한 것은 다시 처리하지 않기</td>
+              <td>Case 2, 4</td>
+            </tr>
+            <tr>
+              <td><strong>Human-in-the-Loop</strong></td>
+              <td>AI가 초안 생성 → 사람이 최종 검수</td>
+              <td>Case 3의 Zendesk 내부 노트</td>
+            </tr>
+            <tr>
+              <td><strong>Alert on Anomaly</strong></td>
+              <td>정상은 쌓고, 이상은 즉시 알림</td>
+              <td>Case 5의 이상 신호 플래그</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>처음 자동화를 설계할 때 이 표를 보면서 <strong>"내 문제는 어떤 패턴인가?"</strong>를 먼저 고르면, 필요한 모듈이 거의 자동으로 나와요.</p>
+
+        <hr>
+
+        <!-- 8. Hands-on -->
+        <h2 id="hands-on">🚀 Hands-on: 5분 만에 첫 시나리오 만들기</h2>
+
+        <p>이론만 보면 지루하니까, 실제로 <strong>Case 1(Gmail 첨부파일 → Drive 저장)</strong>을 Make.com에서 처음부터 만들어볼게요. Google 계정만 있으면 누구나 따라 할 수 있어요.</p>
+
+        <h3>📋 준비물</h3>
+        <ul>
+          <li>Google 계정 (Gmail + Drive 사용 중)</li>
+          <li>Make.com 계정 (무료 가입 가능 — <code>make.com</code> → Sign up)</li>
+          <li>소요 시간: <strong>5~10분</strong></li>
+        </ul>
+
+        <h3>1️⃣ Step 1. Make.com 계정 만들기 (1분)</h3>
+        <p><code>make.com</code> 접속 → 우측 상단 "Get started free" → Google 계정으로 가입 → 지역(Region) 선택 (EU 또는 US). 가입 시 <strong>대시보드</strong>로 이동해요.</p>
+        <p><strong>💡 여기서 일어나는 일:</strong> Make가 당신 계정으로 "빈 공장"을 하나 준비해요. 아직 라인은 깔려있지 않아요.</p>
+
+        <h3>2️⃣ Step 2. 새 Scenario 만들기 (30초)</h3>
+        <p>왼쪽 사이드바 "Scenarios" → 우측 상단 <strong>"+ Create a new scenario"</strong> 클릭. 빈 캔버스가 뜨고 가운데에 <strong>큰 원(+)</strong>이 보여요.</p>
+        <p><strong>💡 여기서 일어나는 일:</strong> Scenario = Make 용어로 "자동화 파이프라인 하나"예요. n8n의 "Workflow"와 같은 개념.</p>
+
+        <h3>3️⃣ Step 3. Trigger 모듈 추가 — Gmail "Watch emails" (2분)</h3>
+        <ol>
+          <li>가운데 <strong>큰 원(+)</strong> 클릭 → 앱 검색창에 <code>Gmail</code> 입력</li>
+          <li>아이콘 선택 → 목록에서 <strong>"Watch emails"</strong> 클릭</li>
+          <li>첫 사용이라면 <strong>"Add a connection"</strong> → Google 로그인 창 → 권한 허용</li>
+          <li>설정 화면:
+            <ul>
+              <li><strong>Folder</strong>: <code>INBOX</code></li>
+              <li><strong>Criteria</strong>: <code>Has attachment</code> = Yes (첨부가 있는 메일만)</li>
+              <li><strong>Mark emails as read</strong>: No (일단 그대로 둠)</li>
+              <li><strong>Limit</strong>: 10 (한 번에 최대 10개씩 처리)</li>
+            </ul>
+          </li>
+          <li><strong>OK</strong> 클릭</li>
+        </ol>
+        <p><strong>💡 여기서 일어나는 일:</strong> "첨부파일 있는 새 메일이 들어오면 시작!"이라는 조건이 걸렸어요. Make가 주기적으로 Gmail을 체크할 준비 완료.</p>
+
+        <h3>4️⃣ Step 4. Action 모듈 추가 — Google Drive "Upload a file" (2분)</h3>
+        <ol>
+          <li>Gmail 원의 <strong>오른쪽에 나타난 +</strong>를 클릭</li>
+          <li>앱 검색창에 <code>Google Drive</code> → <strong>"Upload a file"</strong> 선택</li>
+          <li>연결이 없으면 Google 계정 추가 (Gmail과 같은 계정 가능)</li>
+          <li>설정 화면:
+            <ul>
+              <li><strong>Source file</strong>: Gmail 모듈의 출력에서 <code>Attachments[]</code>를 드래그 (파란 풍선으로 표시됨)</li>
+              <li><strong>Folder</strong>: Drive 폴더 선택 (예: "/Attachments")</li>
+              <li><strong>File name</strong>: 그대로 두거나 원하는 템플릿 입력</li>
+            </ul>
+          </li>
+          <li><strong>OK</strong> 클릭</li>
+        </ol>
+        <p><strong>💡 여기서 일어나는 일:</strong> 두 개의 station이 선으로 이어졌어요. 컨베이어 벨트가 완성된 거예요.</p>
+
+        <h3>5️⃣ Step 5. 테스트 실행 (Run once) (1분)</h3>
+        <ol>
+          <li>하단 <strong>"Run once"</strong> 버튼 클릭</li>
+          <li>Make가 "기다리고 있어요" 표시 → Gmail에 첨부파일 있는 테스트 메일을 본인 계정으로 전송</li>
+          <li>몇 초 후 양쪽 모듈에 <strong>작은 거품(balloon)</strong>이 뜨면서 숫자 "1"이 찍혀요 — 성공!</li>
+          <li>Drive에 가서 방금 업로드된 파일 확인</li>
+        </ol>
+
+        <h3>6️⃣ Step 6. 스케줄 켜기 (실전 배포) (30초)</h3>
+        <ol>
+          <li>좌측 하단 토글 <strong>"Scheduling"</strong>을 켬</li>
+          <li>실행 주기 설정: <strong>"Every 15 minutes"</strong> (무료 플랜 최소 간격)</li>
+          <li>좌측 상단 저장(💾) 클릭</li>
+          <li>이제 <strong>Scenario가 "ON"</strong> — 15분마다 Make가 Gmail을 확인하고 첨부파일을 Drive에 자동 저장해요.</li>
+        </ol>
+
+        <h3>🧩 여기까지 오면… 축하합니다!</h3>
+        <p>방금 만든 것은 <strong>"나의 첫 디지털 조립 라인"</strong>이에요. 이제 이 라인은 내가 자든 깨어있든 24시간 돌아가요. 여기에 Station을 더 추가하면 Case 2, 3, 4, 5로 확장할 수 있어요.</p>
+
+        <h3>⚠️ 자주 하는 실수 3가지 &amp; 해결법</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>실수</th>
+              <th>증상</th>
+              <th>해결</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>1. Gmail 권한 부족</strong></td>
+              <td>"Access denied" 에러</td>
+              <td>Connection 재설정 → 권한 화면에서 <strong>모든 체크박스</strong> 허용</td>
+            </tr>
+            <tr>
+              <td><strong>2. 첨부파일 빈 배열</strong></td>
+              <td>Drive에 아무것도 안 올라옴</td>
+              <td>Gmail 필터에 <code>Has attachment = Yes</code> 확인. 이미지가 본문에 embed된 경우 제외됨</td>
+            </tr>
+            <tr>
+              <td><strong>3. Operation 소진</strong></td>
+              <td>며칠 뒤 "Quota exceeded"</td>
+              <td>Free 플랜은 월 1,000회 제한. 스케줄을 "Every 1 hour"로 늘리거나 유료 전환</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <blockquote>
+          <p>🚀 <strong>5분 체험 미션:</strong> 지금 이 글을 읽는 동안 바로 Make.com 가입하고 위 6단계를 따라 해보세요. <strong>처음 자동화를 만들어본 쾌감</strong>은 말로 설명이 안 돼요. 직접 느껴봐야 감이 잡혀요!</p>
+        </blockquote>
+
+        <h3>🎯 다음 단계 체크리스트 (Hands-on 이후)</h3>
+
+        <p>첫 시나리오가 돌아가기 시작했다면, 다음 단계는 <strong>"작은 것부터 점점 복잡한 것으로"</strong>예요. 아래 순서를 추천합니다.</p>
+
+        <ol>
+          <li><strong>모듈 3개짜리 시나리오</strong>: Trigger 1 + 중간 변환 1 + Output 1 (오늘 만든 것)</li>
+          <li><strong>모듈 5~7개 + Router 1개</strong>: 조건 분기를 넣어보세요 (예: 이메일 제목에 "긴급" 포함 → Slack DM / 그 외 → 기록만)</li>
+          <li><strong>LLM 모듈 포함</strong>: ChatGPT/Claude 모듈 1개 끼워넣기 (Case 2 수준)</li>
+          <li><strong>Iterator + Aggregator</strong>: 배열 데이터를 다루는 법 익히기 (Case 5 수준)</li>
+          <li><strong>에러 핸들러 추가</strong>: 실패 시 Slack으로 알림 오게 만들기</li>
+          <li><strong>팀 공유</strong>: Blueprint Export로 동료에게 전달·피드백 받기</li>
+        </ol>
+
+        <p>이 로드맵을 <strong>2~3주</strong> 안에 따라가면, 어떤 업무 자동화도 감이 잡히는 상태가 돼요. 한번에 모든 걸 익히려 하지 말고 <strong>주당 1~2단계</strong>씩 올라가세요.</p>
+
+        <hr>
+
+        <!-- 9. Make vs n8n 비교표 -->
+        <h2 id="make-vs-n8n">⚖️ Make vs n8n 비교표</h2>
+
+        <p>실제로 Hands-on을 해봤으니 이제 <strong>"그래서 둘 중 뭐 써요?"</strong>라는 질문이 자연스럽게 나올 거예요. 7가지 기준으로 비교해볼게요.</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>비교 기준</th>
+              <th>Make.com</th>
+              <th>n8n</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>가격</strong></td>
+              <td>Operation 단위 과금 ($9~/월)</td>
+              <td>자체호스팅 <strong>무료</strong> / 클라우드는 워크플로우 단위 ($20~/월)</td>
+            </tr>
+            <tr>
+              <td><strong>러닝커브</strong></td>
+              <td>⭐⭐ 쉬움 (비개발자도 1시간이면 첫 시나리오)</td>
+              <td>⭐⭐⭐⭐ 중간~어려움 (기본은 쉽지만 고급 기능은 JS 필요)</td>
+            </tr>
+            <tr>
+              <td><strong>자체호스팅</strong></td>
+              <td>❌ 불가능 (Make 서버에서만 실행)</td>
+              <td>✅ 가능 (내 서버·회사 서버·클라우드 어디든)</td>
+            </tr>
+            <tr>
+              <td><strong>노드/커넥터 개수</strong></td>
+              <td>1,700+ 기성 커넥터 (주요 SaaS 망라)</td>
+              <td>400+ 공식 노드 + 2,000+ 커뮤니티 노드</td>
+            </tr>
+            <tr>
+              <td><strong>데이터 주권</strong></td>
+              <td>Make 서버를 데이터가 통과함</td>
+              <td>자체호스팅 시 <strong>데이터가 외부로 안 나감</strong></td>
+            </tr>
+            <tr>
+              <td><strong>기업 보안 (SSO·SOC2·감사로그)</strong></td>
+              <td>Enterprise 플랜에서 제공</td>
+              <td>Enterprise + 자체호스팅 시 완전 제어</td>
+            </tr>
+            <tr>
+              <td><strong>AI/LLM 노드</strong></td>
+              <td>ChatGPT·Claude·Gemini 모듈 제공</td>
+              <td>LangChain 스타일 에이전트 노드 + 벡터 DB 통합이 <strong>매우 강력</strong></td>
+            </tr>
+            <tr>
+              <td><strong>커뮤니티</strong></td>
+              <td>공식 문서 우수, 템플릿 갤러리 풍부</td>
+              <td>오픈소스 커뮤니티 활발, GitHub 기여 가능</td>
+            </tr>
+            <tr>
+              <td><strong>복잡한 로직 처리</strong></td>
+              <td>Router·Iterator·Aggregator로 충분</td>
+              <td>여기에 <strong>Code 노드(JavaScript)</strong>로 무한 확장 가능</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>🎯 "이 사람에겐 이것을" 추천 박스</h3>
+
+        <h4>👤 타입 A: 비개발자 · 마케터 · 소규모 팀</h4>
+        <blockquote>
+          <p>✅ <strong>Make.com 추천</strong>. 가입 직후부터 직관적인 GUI로 시나리오를 만들 수 있어요. ChatGPT 모듈 한두 번만 써보면 대부분의 마케팅 자동화를 해결합니다. 처음 1개월은 Free plan으로 충분.</p>
+        </blockquote>
+
+        <h4>👤 타입 B: 파워유저 · 데이터 엔지니어 · AI 실험가</h4>
+        <blockquote>
+          <p>✅ <strong>n8n 추천</strong>. JavaScript 노드로 복잡한 데이터 변환이 가능하고, LangChain 스타일 AI 에이전트 노드가 기본 내장이라 RAG·Agent 파이프라인 구축에 최적. Self-host 무료라서 실험 비용도 0.</p>
+        </blockquote>
+
+        <h4>👤 타입 C: 기업 보안팀 · 금융·의료·법률·리서치 회사</h4>
+        <blockquote>
+          <p>✅ <strong>n8n 자체호스팅 추천</strong>. 개인정보·민감 데이터가 Make 서버를 거치지 않아요. 감사로그·SSO·온프레미스 배포까지 가능. 리서치 회사의 Case 5처럼 PII 보호가 필수인 경우 선택지는 사실상 n8n.</p>
+        </blockquote>
+
+        <blockquote>
+          <p>⚖️ <strong>선택 한 줄 요약:</strong> <strong>쉽고 빠르게 시작 = Make</strong> / <strong>유연하고 안전하게 확장 = n8n</strong>. 두 도구는 적대적 관계가 아니에요. 팀에서 둘 다 쓰는 회사도 많아요 (마케팅은 Make, 데이터 파이프라인은 n8n).</p>
+        </blockquote>
+
+        <hr>
+
+        <!-- 10. 의사결정 가이드 -->
+        <h2 id="decision-guide">🤔 언제 Make, 언제 n8n? 의사결정 가이드</h2>
+
+        <p>위 비교표를 보고도 헷갈릴 수 있어요. 질문에 Yes/No로 답하면서 결론에 도달해볼게요.</p>
+
+        <pre>
+  ┌──────────────────────────────────────────────────────────┐
+  │                                                          │
+  │   Q1. 자동화에 민감 데이터(PII·계약서·연구 원자료)가     │
+  │        섞여 있나요?                                      │
+  │                                                          │
+  │       ├─ YES ─→ Q2. 자체호스팅 역량이 있나요?           │
+  │       │          ├─ YES ─→ 🎯 n8n 자체호스팅            │
+  │       │          └─ NO  ─→ 🎯 n8n 클라우드 (EU 리전)    │
+  │       │                    또는 Make Enterprise         │
+  │       │                                                  │
+  │       └─ NO  ─→ Q3. 코딩 경험이 있나요?                 │
+  │                   ├─ YES ─→ Q4. RAG/AI Agent 같은       │
+  │                   │            복잡한 로직인가요?       │
+  │                   │            ├─ YES ─→ 🎯 n8n        │
+  │                   │            └─ NO  ─→ 🎯 Make        │
+  │                   │                                     │
+  │                   └─ NO  ─→ 🎯 Make (무조건 시작)       │
+  │                                                          │
+  └──────────────────────────────────────────────────────────┘
+
+  실용 팁: 처음엔 Make로 시작하고, 필요해지면 n8n으로 갈아타세요.
+         무료 플랜으로 둘 다 해봐도 시간은 하루면 충분!
+        </pre>
+
+        <h3>💼 팀 단위 도입 시나리오</h3>
+
+        <p>개인용이 아닌 <strong>팀·회사 도입</strong>을 고민한다면, 아래 3단계 로드맵이 가장 안전한 전략이에요.</p>
+
+        <h4>1단계 — Pilot (2~4주)</h4>
+        <p>팀 내 <strong>한 명의 "자동화 챔피언"</strong>이 Make.com Free 플랜으로 <strong>1~2개 작은 시나리오</strong>를 만들고 효과를 수치로 측정. 예: "매주 수작업 2시간 → 자동으로 10분". 이 수치가 도입 결정의 강력한 근거가 돼요.</p>
+
+        <h4>2단계 — Scale (1~3개월)</h4>
+        <p>팀 전체가 Make Teams 플랜 또는 n8n 자체호스팅으로 전환. 공통 템플릿 5~10개 정리. 주간 "자동화 공유회"를 돌려서 누가 어떤 시나리오를 만들었는지 팀원 간 학습.</p>
+
+        <h4>3단계 — Governance (3개월 이후)</h4>
+        <p>Production 워크플로우에 <strong>네이밍 규칙·권한 관리·에러 알림·감사 로그</strong>를 도입. 민감 데이터 처리는 n8n 자체호스팅으로 이전. 자동화 목록을 <strong>Confluence·Notion</strong>에 정리해서 "블랙박스" 현상 방지.</p>
+
+        <h3>🔀 실제 상황별 추천</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>상황</th>
+              <th>추천</th>
+              <th>이유</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>팀 내 자동화 확산용 "첫 삽"</td>
+              <td>Make</td>
+              <td>비개발자도 금방 배움, 협업 쉬움</td>
+            </tr>
+            <tr>
+              <td>사내 RAG 파이프라인 구축</td>
+              <td>n8n</td>
+              <td>LangChain 노드 + 벡터 DB 통합이 강력</td>
+              </tr>
+            <tr>
+              <td>마케팅 캠페인 자동화</td>
+              <td>Make</td>
+              <td>Mailchimp·HubSpot·Airtable 커넥터 1류</td>
+            </tr>
+            <tr>
+              <td>고객 데이터·PII 처리</td>
+              <td>n8n 자체호스팅</td>
+              <td>데이터 주권 + 감사로그 완전 제어</td>
+            </tr>
+            <tr>
+              <td>API 월 수만 건 호출</td>
+              <td>n8n 자체호스팅</td>
+              <td>Operation 과금 없음, 서버비만 부담</td>
+            </tr>
+            <tr>
+              <td>가볍게 AI 실험</td>
+              <td>Make</td>
+              <td>ChatGPT 모듈 5분이면 연결</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <blockquote>
+          <p>🤔 <strong>최종 한 줄:</strong> 헷갈리면 <strong>Make부터 시작</strong>하세요. 러닝커브가 낮아서 "자동화 감각"을 빨리 익힐 수 있어요. 나중에 n8n이 필요해지면 그때 옮겨도 늦지 않아요.</p>
+        </blockquote>
+
+        <hr>
+
+        <!-- 11. 보안 체크리스트 -->
+        <h2 id="security">🛡️ 보안·데이터·비용 체크리스트</h2>
+
+        <p>자동화는 <strong>양날의 검</strong>이에요. 한 번 라인을 잘못 깔면 <strong>민감 데이터가 외부로 유출</strong>되거나 <strong>요금 폭탄</strong>을 맞을 수 있어요. 특히 리서치 회사처럼 개인정보·연구 원자료를 다루는 환경에서는 꼭 체크해야 할 항목을 정리했어요.</p>
+
+        <h3>🔒 1. 민감 데이터 처리 체크리스트</h3>
+        <ul>
+          <li><strong>☐ PII(개인식별정보) 마스킹</strong>: 이메일·전화·주민번호·계좌를 LLM에 보내기 전에 마스킹하세요. 정규식 Replace 모듈로 처리 가능.</li>
+          <li><strong>☐ API 키를 워크플로우에 하드코딩 금지</strong>: Make의 "Connections", n8n의 "Credentials" 기능을 사용. 팀원에게 공유 시 키가 노출되지 않아요.</li>
+          <li><strong>☐ 외부 AI에 보내는 프롬프트 감사</strong>: ChatGPT/Claude에 보내는 시스템 프롬프트에 회사 기밀 정책이 들어있지 않은지 확인.</li>
+          <li><strong>☐ 로그 보관 기간 설정</strong>: Make·n8n 실행 로그에 응답 원본이 그대로 남을 수 있어요. 민감 데이터가 포함된 워크플로우는 <strong>로그 보관 기간을 짧게</strong> (예: 7일).</li>
+          <li><strong>☐ 자체호스팅 시 HTTPS 강제</strong>: n8n을 내부 서버에 올렸다면 TLS 인증서를 꼭 설정. 평문 HTTP는 내부망이라도 지양.</li>
+        </ul>
+
+        <h3>💰 2. 비용 관리 체크리스트</h3>
+        <ul>
+          <li><strong>☐ Operation 소진 예측</strong>: Make는 "하루 실행 수 × 모듈 수 × 30일"로 월간 Operation을 미리 계산. 여유 30% 버퍼.</li>
+          <li><strong>☐ 무한 루프 방지</strong>: Trigger가 Output을 다시 트리거하는 회로를 방지. 예: "Slack에 메시지 보내기" 출력이 "Slack 메시지 감지" 트리거를 다시 깨우지 않는지.</li>
+          <li><strong>☐ LLM 토큰 비용 추적</strong>: ChatGPT/Claude 호출마다 비용 발생. OpenAI 대시보드에서 사용량 알림 설정 (월 $20 초과 시 이메일 등).</li>
+          <li><strong>☐ Scheduling 주기 최적화</strong>: 15분마다 체크 vs 1시간마다 체크는 <strong>Operation 4배</strong> 차이. 비즈니스 요구에 맞는 최소 주기로.</li>
+          <li><strong>☐ Rate Limit 고려</strong>: 외부 API(OpenAI, Slack 등)는 분당 호출 제한이 있어요. 대량 처리 시 Iterator 모듈의 "Delay" 설정으로 간격 부여.</li>
+        </ul>
+
+        <h3>📋 3. 데이터 거버넌스 체크리스트 (리서치 회사 관점)</h3>
+        <ul>
+          <li><strong>☐ 응답자 동의 고지</strong>: 설문·인터뷰 응답이 AI 분석에 쓰인다는 점을 동의서에 명시. GDPR·개인정보보호법 준수.</li>
+          <li><strong>☐ LLM 학습 금지 옵션</strong>: OpenAI API는 기본적으로 고객 데이터를 학습에 쓰지 않지만, 반드시 <strong>"Data Usage Opt-out"</strong> 재확인. Anthropic Claude도 마찬가지.</li>
+          <li><strong>☐ 리전 선택</strong>: 유럽 고객 데이터면 EU 리전 LLM (Azure OpenAI EU, Anthropic via AWS Bedrock EU) 사용.</li>
+          <li><strong>☐ 감사 추적 로그 보관</strong>: "누가 어떤 워크플로우를 언제 수정했는지"가 기록되어야 해요. n8n Enterprise, Make Enterprise 둘 다 제공.</li>
+          <li><strong>☐ 자동 분석 결과의 인간 검수</strong>: AI의 자동 분류·감성 평가는 <strong>100% 정확하지 않아요</strong>. 중요한 리포트 전에는 반드시 리서처 샘플 검수 단계 포함.</li>
+        </ul>
+
+        <h3>🧪 4. 운영 안정성 체크리스트</h3>
+        <ul>
+          <li><strong>☐ 에러 알림 워크플로우 별도 구축</strong>: 메인 워크플로우가 실패하면 Slack #alerts로 알림. Make의 "Error handlers", n8n의 "Error Workflow" 기능 활용.</li>
+          <li><strong>☐ 주요 워크플로우 버전 관리</strong>: n8n은 Git 연동 가능. Make는 내보내기(Export)로 JSON 백업을 주기적으로.</li>
+          <li><strong>☐ 테스트 환경 분리</strong>: Production 워크플로우와 동일 복제본을 Staging으로. 수정 사항은 Staging에서 먼저 검증.</li>
+          <li><strong>☐ 실패 재시도 정책</strong>: 기본 3회 재시도는 대부분 상황 OK지만, 멱등성(같은 요청 중복 처리 안전) 보장이 안 되는 경우(예: 결제)는 1회만.</li>
+        </ul>
+
+        <blockquote>
+          <p>🛡️ <strong>보안 한 줄 요약:</strong> "자동화는 사람의 실수를 줄이지만, <strong>잘못 설계된 자동화는 사람의 실수를 증폭</strong>해요." 특히 LLM에 보내는 데이터와 로그 보관 정책을 반드시 확인. 마케팅 리서치 회사라면 <strong>Case 5 같은 파이프라인에 PII 마스킹 단계를 절대 빼지 마세요</strong>.</p>
+        </blockquote>
+
+        <h3>🚨 실제로 자주 발생하는 5가지 사고 사례</h3>
+
+        <p>현업에서 실제 일어나는 사고들을 미리 알면 예방할 수 있어요. 각 사례와 재발 방지책을 함께 봅니다.</p>
+
+        <h4>사례 1. 무한 루프로 하룻밤에 Operation 10만 건 소진</h4>
+        <p><strong>상황</strong>: "Slack 메시지 감지 → 요약 → Slack 채널에 요약 전송" 시나리오를 만들었는데, 봇이 보낸 요약 메시지 자체를 트리거가 다시 감지하면서 끝없이 루프 발생.<br>
+        <strong>예방</strong>: 트리거에 <strong>"봇이 보낸 메시지 제외"</strong> 필터 필수. 출력 채널과 트리거 채널을 분리하는 것도 방법.</p>
+
+        <h4>사례 2. API 키 유출 → 외부 대량 호출</h4>
+        <p><strong>상황</strong>: 팀원이 테스트용으로 시나리오 JSON을 GitHub에 공유했는데, OpenAI API 키가 그대로 포함돼 있어 노출 → 제3자가 이틀간 수천 달러 호출.<br>
+        <strong>예방</strong>: <strong>Connections/Credentials 기능</strong>으로만 키 관리. Export 전에 <strong>반드시 스캔</strong>. GitHub secret scanning 활성화.</p>
+
+        <h4>사례 3. PII가 LLM 로그에 남아 규제 위반</h4>
+        <p><strong>상황</strong>: 고객 이메일·전화번호가 포함된 문의 데이터를 그대로 OpenAI에 전송 → 30일간 보관되는 로그에 PII 축적 → 감사에서 지적.<br>
+        <strong>예방</strong>: <strong>LLM 호출 전 마스킹 단계 필수</strong>. OpenAI의 경우 Zero Data Retention 옵션을 Enterprise로 활성화.</p>
+
+        <h4>사례 4. 잘못된 데이터 매핑으로 고객에게 타인 정보 노출</h4>
+        <p><strong>상황</strong>: 응답 배열의 인덱스를 잘못 매핑해서 "고객 A의 응답"이 "고객 B의 이메일"에 붙어서 발송됨.<br>
+        <strong>예방</strong>: <strong>Run once</strong>로 샘플 데이터 테스트 필수. 고객 대면 출력은 <strong>Human-in-the-Loop</strong> 패턴(검수 단계)을 넣기.</p>
+
+        <h4>사례 5. 스케줄 충돌로 중복 처리</h4>
+        <p><strong>상황</strong>: 같은 시나리오가 5분마다 돌아가는데, 처리에 8분이 걸려 두 실행이 겹침 → 같은 데이터 2번 처리.<br>
+        <strong>예방</strong>: 실행 주기를 실제 처리 시간의 <strong>2배 이상</strong>으로. 또는 Data Store를 써서 "이미 처리 중" 플래그 관리.</p>
+
+        <blockquote>
+          <p>⚠️ <strong>사고 예방의 원칙:</strong> "모든 자동화는 <strong>처음엔 반드시 실패</strong>한다고 가정하세요." 중요한 시나리오일수록 <strong>Staging에서 먼저 돌려보고</strong>, 첫 주는 <strong>매일 로그를 확인</strong>하는 습관이 사고를 막아요.</p>
+        </blockquote>
+
+        <hr>
+
+        <!-- 12. FAQ -->
+        <h2 id="faq">❓ 자주 하는 질문 (FAQ)</h2>
+
+        <h3>Q1. 워크플로우가 중간에 에러 나면 어떻게 디버깅하나요?</h3>
+        <p>Make/n8n 모두 <strong>실행 히스토리(Execution History)</strong>를 제공해요. 실패한 실행을 클릭하면 <strong>어느 모듈에서, 어떤 입력이, 어떤 에러를 냈는지</strong>가 한눈에 보여요. 대부분의 에러는 다음 4가지 중 하나예요:</p>
+        <ul>
+          <li>인증 만료(토큰 재갱신)</li>
+          <li>Rate limit 초과(간격 늘리기)</li>
+          <li>데이터 타입 불일치(매핑 재설정)</li>
+          <li>API 응답 구조 변경(필드 이름 업데이트)</li>
+        </ul>
+        <p>에러 메시지를 그대로 Google/ChatGPT에 붙여넣으면 90% 이상 해결 경로가 나옵니다.</p>
+
+        <h3>Q2. ChatGPT 대신 Claude나 Gemini를 써도 되나요?</h3>
+        <p>네, 자유롭게 바꿀 수 있어요. Make/n8n 모두 <strong>Anthropic Claude · Google Gemini · OpenAI ChatGPT · Azure OpenAI · Mistral</strong> 등 주요 LLM을 기본 모듈로 지원해요. "Swap out" 가능하므로 <strong>요금·성능·리전 정책</strong>에 따라 바꿔 써보세요. 한국어 품질은 <strong>Claude와 GPT-4 계열</strong>이 가장 우수한 편.</p>
+
+        <h3>Q3. 워크플로우를 여러 버전으로 관리할 수 있나요?</h3>
+        <p>n8n은 <strong>Git 연동</strong>으로 워크플로우 JSON을 저장소에 자동 커밋할 수 있어요 (Enterprise 기능). Make는 네이티브 버전 관리가 없지만 <strong>시나리오 Export → JSON → Git 커밋</strong>을 주기적으로 하면 유사 효과. 팀 협업에서는 이 프로세스를 습관화하는 것을 권장.</p>
+
+        <h3>Q4. Make/n8n이 할 수 없는 일은 뭐가 있나요?</h3>
+        <ul>
+          <li><strong>실시간(초 단위) 처리</strong>: 주식 거래·실시간 입찰처럼 초 단위 응답이 필요한 시스템은 부적합. 일반 업무는 분 단위로 충분.</li>
+          <li><strong>대용량 배치(수백만 건/일)</strong>: 개당 처리는 빠르지만, 수백만 건이면 Operation·메모리 한계. 이럴 땐 전용 ETL 도구(Airflow, Dagster).</li>
+          <li><strong>복잡한 상태 머신</strong>: 수십 개 상태를 가진 주문·결제 시스템은 전용 워크플로우 엔진(Temporal, AWS Step Functions)이 더 적합.</li>
+        </ul>
+        <p>이걸 제외하면 <strong>일상 업무 자동화의 95%</strong>는 Make/n8n으로 커버돼요.</p>
+
+        <h3>Q5. Zapier와는 뭐가 다른가요?</h3>
+        <p>Zapier는 Make·n8n과 같은 카테고리 경쟁자예요. 간단 비교:</p>
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th>Zapier</th>
+              <th>Make.com</th>
+              <th>n8n</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>강점</td><td>가장 많은 커넥터 (6,000+)</td><td>강력한 데이터 변환·시각화</td><td>오픈소스·자체호스팅·AI 통합</td></tr>
+            <tr><td>약점</td><td>가격 비쌈, 복잡한 로직 약함</td><td>Zapier보다 커넥터 적음</td><td>초심자 러닝커브</td></tr>
+            <tr><td>추천 용도</td><td>초간단 1~2 step 자동화</td><td>중규모 비즈니스 자동화</td><td>AI·민감 데이터·복잡 로직</td></tr>
+          </tbody>
+        </table>
+        <p>3개 모두 무료 체험이 있으니 자기 업무에 맞게 한 번씩 써보는 게 가장 빠른 비교.</p>
+
+        <h3>Q6. "내 회사 업무를 자동화하면 내 일자리가 사라지지 않을까요?"</h3>
+        <p>아주 좋은 질문이에요. 실무에서 관찰되는 공통 패턴은 이래요:</p>
+        <ul>
+          <li>자동화는 <strong>"반복되고 규칙적인 작업"</strong>만 없애요. 이 작업들은 대개 <strong>지겹고 실수 많은 업무</strong>였어요.</li>
+          <li>대신 <strong>"판단·창의·관계"</strong>가 필요한 고부가가치 일에 시간을 쓸 수 있어요.</li>
+          <li>자동화 도구를 <strong>"다룰 줄 아는 사람"</strong>이 팀에서 점점 더 중요해져요 — 여러분이 그 사람이 되세요!</li>
+        </ul>
+        <p>결국 중요한 건 <strong>"자동화에 잡히지 않는 사람"</strong>이 되는 것이고, 그 첫걸음이 <strong>자동화를 이해하고 직접 만들어보는 것</strong>이에요.</p>
+
+        <h3>Q7. 팀원들과 시나리오를 어떻게 공유하나요?</h3>
+        <p>Make는 Teams 플랜부터 같은 조직 내 시나리오를 멤버 간 읽기·편집·실행 권한을 나눠 할당할 수 있어요. 외부 공유는 <strong>Blueprint Export</strong>(시나리오 JSON 파일 내보내기) 기능으로 공유받은 사람이 자기 계정에 가져와 실행하면 됩니다. n8n은 <strong>사용자 관리 + 역할(RBAC)</strong>이 Enterprise 기능으로 제공되며, 자체호스팅 시 Git 저장소로 워크플로우 변경을 버전 관리하는 게 업계 표준이에요.</p>
+
+        <h3>Q8. AI가 만든 답변을 사람이 검수하지 않고 바로 고객에게 보내도 괜찮나요?</h3>
+        <p>한마디로 <strong>"용도에 따라"</strong>예요. 다음 원칙을 기억하세요:</p>
+        <ul>
+          <li><strong>낮은 위험 (내부 참고용)</strong>: 요약본·분류·태깅 → 자동 저장 OK</li>
+          <li><strong>중간 위험 (고객 대면)</strong>: CS 답변 초안·마케팅 카피 → <strong>사람 검수 후 전송</strong> 권장</li>
+          <li><strong>높은 위험 (법적·재무·의학)</strong>: 계약서·진단·투자 권고 → <strong>절대 자동 전송 금지</strong></li>
+        </ul>
+        <p>Case 3(고객 문의 RAG 답변)을 "초안"으로 설계한 이유가 바로 이것. 신뢰는 <strong>점진적으로 검증</strong>하면서 자동화 수위를 올리는 게 정답이에요.</p>
+
+        <h3>Q9. 모바일에서도 편집할 수 있나요?</h3>
+        <p>기술적으로는 가능하지만 권장하지 않아요. Make·n8n 모두 캔버스 기반이라 <strong>데스크톱 브라우저</strong>가 훨씬 편합니다. 단, <strong>모니터링·실행 이력 확인·수동 재실행</strong>은 모바일 브라우저로도 충분히 가능. 급한 에러가 났을 때 "Slack 알림 → 모바일로 이력 확인 → 원인 파악 → 데스크톱 돌아가서 수정"이 흔한 운영 패턴.</p>
+
+        <hr>
+
+        <!-- 13. 핵심 요약 -->
+        <h2 id="summary">🎓 핵심 요약</h2>
+
+        <p>Week 5를 한 장으로 정리하면 이렇게 돼요.</p>
+
+        <ul>
+          <li><strong>Make.com / n8n = 디지털 공장 조립 라인</strong> — Trigger → Modules → Output의 조합으로 24시간 돌아가는 자동화를 만들어요.</li>
+          <li><strong>Week 5는 새 기술이 아니라 "지휘"</strong> — <span class="week-link">Week 1 Agent</span>, <span class="week-link">Week 2 RAG</span>, <span class="week-link">Week 3 API</span>, <span class="week-link">Week 4 NotebookLM</span>을 연결·자동화하는 방법이에요.</li>
+          <li><strong>Make = 비개발자·빠른 시작 / n8n = 개발자·자체호스팅·AI</strong> — 둘은 적이 아니라 상황에 맞게 고르는 도구.</li>
+          <li><strong>5개 Practice Cases</strong> — Gmail→Drive 정리 / RSS→LLM 요약→Slack / 고객 문의 RAG 답변 / 경쟁사 뉴스 분석 / 설문 VOC 자동 분석 (마케팅 리서치).</li>
+          <li><strong>Hands-on 5분 체험</strong>은 무조건 해보세요 — "감각"이 생겨요.</li>
+          <li><strong>보안·비용은 처음부터 챙기기</strong> — PII 마스킹, Operation 예측, LLM 토큰 비용 추적, 자동 분석의 인간 검수.</li>
+        </ul>
+
+        <blockquote>
+          <p>🎯 <strong>한 줄 마무리:</strong> Make/n8n = <strong>지난 4주간 배운 도구들을 연결해 "내 디지털 공장"을 만드는 방법</strong>. 처음엔 작은 시나리오 하나로 시작하세요. 5분의 Hands-on이 여러분의 업무 방식을 바꿀 수 있어요 🏭⚙️🚀</p>
+        </blockquote>
+
+        <hr>
+
+        <!-- 14. 다음 주 예고 -->
+        <h2 id="next-week">📚 다음 주 예고</h2>
+
+        <p>Week 6에서는 오늘 배운 자동화 위에 <strong>더 똑똑한 AI 요소</strong>를 얹는 방법을 다룰 예정이에요. 오늘은 "조립 라인을 만드는 법"을 배웠다면, 다음 주는 "조립 라인에 <strong>판단력 있는 AI 직원</strong>을 배치하는 법"이에요.</p>
+
+        <h3>📝 이번 주 숙제 (다음 수업 전까지)</h3>
+
+        <p>이번 주 과제는 딱 세 가지예요. 부담 없이 할 수 있는 분량이니 꼭 해보세요.</p>
+
+        <ol>
+          <li><strong>🏭 필수 과제 — "나만의 첫 조립 라인" 만들기</strong><br>
+            Case 1(Gmail→Drive)을 그대로 따라 만들거나, 본인 업무에서 <strong>"매주 반복되는 짜증나는 작업"</strong>을 하나 골라 자동화해 보세요. 모듈 3~5개 규모로 충분. 스크린샷을 찍어서 팀 Slack에 공유해 주세요.</li>
+          <li><strong>🤔 선택 과제 — 5개 Practice Cases 중 하나를 골라 "설계 스케치" 작성</strong><br>
+            코드를 쓰지 않고도 할 수 있어요. "이 자동화를 우리 팀에 적용한다면 Trigger는 뭐고, Module은 어떤 순서로, Output은 어디로?"를 종이에 그려보세요. 설계 감각이 빠르게 늘어요.</li>
+          <li><strong>📚 읽을거리 — Make.com 템플릿 갤러리 둘러보기</strong><br>
+            <code>make.com/en/templates</code>에 가서 10개 정도의 템플릿을 클릭만 해봐도, "아 이런 자동화도 가능하구나"의 폭이 확 넓어져요.</li>
+        </ol>
+
+        <p>직접 만들어 본 사람만 다음 주 수업이 재미있어져요! 실패해도 괜찮아요 — 실패에서 오는 질문이 가장 좋은 학습 소스예요.</p>
+
+        <p style="text-align: center; color: #7c3aed; font-size: 1.1rem; margin-top: 3rem;">
+          <strong>🏭 수고하셨습니다!</strong><br>
+          이제 여러분은 <strong>디지털 공장의 공장장</strong>이에요. 첫 라인을 깔러 가볼까요?
+        </p>
+
+      </div>
+    </article>
+  </div>
+
+</body>
+</html>
